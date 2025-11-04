@@ -31,26 +31,11 @@
     pip install pygame
     ```
 
-    *(注: `requirements.txt`を作成すると、`pip install -r requirements.txt`で一括インストールできて便利です)*
-
 3. **ゲームを実行します:**
 
     ```bash
     python main.py 
     ```
-
-    *(注: メインの実行ファイル名が異なる場合は修正してください)*
-
-## ディレクトリ構造
-
-```
-.
-├── .gitignore      # Gitの追跡対象外ファイルを指定
-├── README.md       # このファイル
-├── config.py       # ゲームの設定ファイル
-├── main.py         # ゲームの実行ファイル (エントリーポイント)
-└── game.py         # ゲームのメインロジック (※推測)
-```
 
 ## 操作方法
 
