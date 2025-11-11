@@ -1,4 +1,4 @@
-# game.py
+# mode/play/play.py
 
 import pygame
 import math
@@ -8,17 +8,17 @@ from config import *
 from entities.planet import Planet
 from entities.star import Star
 from entities.beam import BeamCorpse
-from play.ui.button import Button
-from play.ui.hud import HUD
+from mode.play.ui.button import Button
+from mode.play.ui.hud import HUD
 
 class Play:
     """
-    ゲーム全体を管理するメインクラス
+    PLAYモードを管理するクラス
     """
 
     def __init__(self, screen, clock):
         """
-        Gameオブジェクトの初期化
+        Playオブジェクトの初期化
         """
        
         # 画面の設定

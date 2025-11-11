@@ -2,11 +2,11 @@
 
 import pygame
 import sys       
-import math
 import random  
 
 from config import *
-from play.play import Play
+from mode.play.play import Play
+from mode.system.system import System
 
 class Game:
     """
@@ -25,16 +25,14 @@ class Game:
         pygame.display.set_caption("ORBITAL SURVIVAL")
         
         self.is_running = True # 人間がプレイする際のループ制御用
+        self.game_mode = 'system'  # ゲームモードの初期設定
 
-        self._initialize_game_state_()
-
-    # --- ゲーム状態の初期化 ---
-    def _initialize_game_state_(self):
         # --- 背景の星を生成 ---
         self.background_stars = self._create_stars_(NUM_BACKGROUND_STARS)
 
         # ゲームモードオブジェクトの初期化
         self.play = Play(self.screen, self.clock)
+        self.system = System(self.screen)
 
     #--- 背景の星を生成 ---
     def _create_stars_(self, num_stars):
@@ -56,17 +54,33 @@ class Game:
         """
         キーボードやマウスのイベントを処理する
         """
+
         for event in pygame.event.get():
             # ウィンドウの閉じるボタンが押されたらループを抜ける
             if event.type == pygame.QUIT:
                 self.is_running = False
+
+            # ゲームモードごとのイベント処理
+            if self.game_mode == 'system':
+                if self.system.system_button.is_pressed(event):
+                    self.game_mode = 'play'
+                    self.play.initialize_play_state()  # プレイモードの初期化
+            elif self.game_mode == 'play':
+                if self.system.system_button.is_pressed(event):
+                    self.game_mode = 'system'
 
     #--- ゲーム状態の更新 ---
     def _update_(self):
         """
         ゲーム内の各オブジェクトの状態を更新する
         """
-        self.play.update()
+        if self.game_mode == 'system':
+            self.system.update()
+        elif self.game_mode == 'play':
+            self.play.update()
+        else:
+            self.system.update()
+
 
     #--- 描画 ---
     def _draw_(self):
@@ -78,7 +92,12 @@ class Game:
         for star_data in self.background_stars:
             pygame.draw.circle(self.screen, star_data['color'], star_data['pos'], star_data['radius'])
 
-        self.play.draw()
+        if self.game_mode == 'system':
+            self.system.draw()
+        elif self.game_mode == 'play':
+            self.play.draw()
+        else:
+            self.system.draw()
 
         pygame.display.flip()
 
@@ -86,8 +105,6 @@ class Game:
         """
         ゲームのメインループ
         """
-
-        self.play.initialize_play_state()
 
         # ゲームループ
         while self.is_running:
