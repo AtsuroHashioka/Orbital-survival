@@ -17,7 +17,7 @@ class Planet(CelestialBody):
 
     MAX_SPEED = ACCELERATION * FRICTION / (1 - FRICTION)
     MAX_TRAJECTORY_LENGTH = 2 * math.pi / 6
-    TRAJECTORY_NUM = 50
+    TRAJECTORY_NUM = 60
 
     def __init__(self, center_pos, size, angle, radius):
         """
