@@ -1,4 +1,4 @@
-# ui/hud.py
+# play/ui/hud.py
 
 import pygame
 from config import WHITE, SCREEN_WIDTH

@@ -1,4 +1,4 @@
-# ui/button.py
+# play/ui/button.py
 
 import pygame
 import math
