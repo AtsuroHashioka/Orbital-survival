@@ -17,8 +17,6 @@ class Game:
     """
     ゲーム全体を管理するメインクラス
     """
-    # 強化学習エージェントが観測するビームの数
-    NUM_OBSERVED_BEAMS = 5
 
     def __init__(self):
         """
@@ -32,6 +30,7 @@ class Game:
         # 時間管理用のClockオブジェクト
         self.clock = pygame.time.Clock()
         self.is_running = True # 人間がプレイする際のループ制御用
+
         self._initialize_game_state()
 
     def _create_stars(self, num_stars):
@@ -49,22 +48,19 @@ class Game:
         return stars
 
     def _initialize_game_state(self):
-        """ゲームの状態を初期化する。__init__とresetから呼ばれる。"""
+        """ゲームの状態を初期化する。"""
         self.start_time = pygame.time.get_ticks() # 経過時間の初期化
         # --- 背景の星を生成 ---
         self.background_stars = self._create_stars(NUM_BACKGROUND_STARS)
 
         # --- オブジェクトの生成 ---
-        # ボタンのスペースを考慮し、公転の中心を少し上に設定
-        center_point = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50)
         # Planetオブジェクトを生成
-        self.planet = Planet(center_point, Planet.SIZE)
+        self.planet = Planet(CENTER_POS, PLANET_SIZE, PLANET_INITIAL_ANGLE, PLANET_ORBIT_RADIUS)
         # Starオブジェクトを生成
-        self.star = Star(center_point, Planet.SIZE * 3.0)
-        # 新しいデザインの円形ボタンを画面左右中心に配置
-        button_radius = 40
-        self.left_button = Button(SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT - 80, button_radius, 'left')
-        self.right_button = Button(SCREEN_WIDTH / 2 + 100, SCREEN_HEIGHT - 80, button_radius, 'right')
+        self.star = Star(CENTER_POS, STAR_SIZE)
+        # 円形ボタンを画面左右中心に配置
+        self.left_button = Button(SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT - 80, BUTTON_RADIUS, 'left')
+        self.right_button = Button(SCREEN_WIDTH / 2 + 100, SCREEN_HEIGHT - 80, BUTTON_RADIUS, 'right')
         # HUDオブジェクトを生成
         self.hud = HUD()
         self.left_active = False
@@ -77,6 +73,7 @@ class Game:
         """
         ゲームのメインループ
         """
+
         while self.is_running:
             # 1. イベント処理
             self._handle_events()
@@ -133,6 +130,11 @@ class Game:
         # 衝突の判定とビームの削除
         self._check_collisions()
 
+    def _update_corpses(self):
+        """光線の死体を更新し、寿命が尽きたものを削除する"""
+        for corpse in self.corpses:
+            corpse.update()
+        self.corpses = [c for c in self.corpses if c.is_alive()]
 
     def _check_collisions(self):
         """惑星と光線の衝突を判定する"""
@@ -140,12 +142,14 @@ class Game:
         planet_orbit_radius = self.planet.radius
         planet_size = self.planet.size
 
+        # 衝突判定のための角度のマージンを計算
         if planet_orbit_radius > planet_size:
             angle_margin = math.asin(planet_size / planet_orbit_radius)
         else:
             angle_margin = math.pi
 
-        surviving_beams = []
+        # ビームと惑星の衝突を判定し、衝突したビームを死体リストに追加し、生き残ったビームはリストに保持
+        surviving_beams = [] # 生き残ったビームのリスト
         for beam in self.star.beams:
             beam_front_radius = beam.radius + beam.width + self.planet.size 
             beam_back_radius = max(0, beam.radius - beam.width - self.planet.size)
@@ -157,6 +161,7 @@ class Game:
                 if abs(angle_diff) < beam.arc_range / 2 + angle_margin:
                     self.kill_count += 1
                     self.score -= 200
+                    # 衝突したビームの死体を追加
                     self.corpses.append(BeamCorpse(beam.center_pos, beam.angle, beam.arc_range, beam.radius, beam.width))
                     collided = True
             elif beam.radius > planet_orbit_radius and not beam.dodged:
@@ -164,89 +169,11 @@ class Game:
                 beam.dodged = True
             
             if not collided:
+                # 生き残ったビームとしてリストに追加
                 surviving_beams.append(beam)
 
+        # 恒星のビームリストを更新(生き残ったビームのみを保持)
         self.star.beams = surviving_beams
-
-    def _update_corpses(self):
-        """光線の死体を更新し、寿命が尽きたものを削除する"""
-        for corpse in self.corpses:
-            corpse.update()
-        self.corpses = [c for c in self.corpses if c.is_alive()]
-
-    # --- 強化学習用インターフェース ---
-
-    def reset(self):
-        """
-        RL環境をリセットし、初期状態を返す
-        """
-        self._initialize_game_state()
-        return self._get_state()
-
-    def step(self, action):
-        """
-        RLエージェントのアクションを実行し、環境を1ステップ進める
-        action: 0: 何もしない, 1: 左に加速, 2: 右に加速
-        returns: (state, reward, done, info)
-        """
-        # 1. アクションに基づいて方向を決定し、ボタンの表示状態を更新
-        direction = 0
-        self.left_active = False
-        self.right_active = False
-        if action == 1:  # 左
-            direction = 1
-            self.left_active = True
-        elif action == 2:  # 右
-            direction = -1
-            self.right_active = True
-
-        # 2. ゲーム状態を更新
-        self.planet.update(direction)
-        self.star.update()
-        self._update_corpses()
-
-        # 3. 衝突判定と報酬計算
-        score_before = self.score
-        kills_before = self.kill_count
-        self._check_collisions()
-
-        done = self.kill_count > kills_before
-
-        if done:
-            reward = -100.0  # 衝突時の大きなペナルティ
-        else:
-            # 生存報酬 + ビーム回避によるスコア変動
-            reward = 0.1 + (self.score - score_before)
-
-        # 4. 新しい状態を取得
-        state = self._get_state()
-
-        # 5. Gym/Gymnasium互換の形式で返す
-        info = {}
-        return state, reward, done, info
-
-    def _get_state(self):
-        """現在のゲーム状態を固定長のNumpy配列として取得する"""
-        # 惑星の状態 (3次元)。値は正規化する。
-        planet_state = np.array([
-            self.planet.angle / (2 * math.pi),
-            self.planet.speed,
-            self.planet.radius / (SCREEN_HEIGHT / 2)
-        ])
-
-        # 惑星に近い順にビームをソート
-        beams = sorted(self.star.beams, key=lambda b: abs(b.radius - self.planet.radius))
-
-        beam_features = []
-        for i in range(self.NUM_OBSERVED_BEAMS):
-            if i < len(beams):
-                beam = beams[i]
-                # [相対距離, 相対角度, 円弧の範囲, 幅] を正規化して追加
-                features = [(beam.radius - self.planet.radius) / (SCREEN_HEIGHT / 2), (beam.angle - self.planet.angle + math.pi) % (2 * math.pi) - math.pi, beam.arc_range, beam.width / (SCREEN_HEIGHT / 2)]
-                beam_features.extend(features)
-            else: # ビームが足りない場合は-1で埋める
-                beam_features.extend([-1] * 4)
-        return np.concatenate([planet_state, np.array(beam_features)]).astype(np.float32)
 
     def _draw(self):
         """

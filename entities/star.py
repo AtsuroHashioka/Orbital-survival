@@ -6,15 +6,15 @@ import random
 
 from .base import CelestialBody
 from .beam import Beam
-from config import SUN, BLACK, FPS
+from config import *
 
 class Star(CelestialBody):
     """
     恒星を表すクラス
     """
     # --- クラス定数 ---
-    ACCELERATION = 0.0010   # 恒星の角加速度
-    FRICTION = 0.99         # 恒星の摩擦
+    ACCELERATION = STAR_ACCELERATION   # 恒星の角加速度
+    FRICTION = STAR_FRICTION# 恒星の摩擦
 
     def __init__(self, center_pos, size):
         """
@@ -27,10 +27,12 @@ class Star(CelestialBody):
             size=size,
             acceleration=self.ACCELERATION,
             friction=self.FRICTION,
-            initial_angle=random.uniform(0, 2 * math.pi),
-            initial_speed=random.uniform(-0.005, 0.005)
+
+            # 初期角度と速度はランダムに設定
+            angle=random.uniform(0, 2 * math.pi),
+            speed=random.uniform(-0.005, 0.005)
         )
-        self.color = SUN
+        self.color = SUN_ORANGE
         self.arc_range = math.pi * 60 / 360  # 黒い円弧の描画範囲
 
         # ランダム制御用のタイマーと現在の進行方向
@@ -41,7 +43,7 @@ class Star(CelestialBody):
         # 砲台の発光を制御するためのタイマー
         self.cannon_flash_timers = [0, 0, 0]
         self.beams = [] # 発射した光線を管理するリスト
-        self.cannon_initial_radius = self.size               # 砲台の初期半径を保存
+        self.cannon_initial_radius = self.size # 砲台の初期半径を保存
         self.cannon_radii = [self.cannon_initial_radius] * 3 # 各砲台の半径
 
     def update(self):
@@ -83,7 +85,7 @@ class Star(CelestialBody):
                 if self.cannon_radii[i] > self.cannon_initial_radius:
                     self.cannon_radii[i] = self.cannon_initial_radius
 
-        self.apply_physics(self.random_direction)
+        self.update_angle_and_speed(self.random_direction)
         
     def draw(self, screen):
         """
@@ -97,7 +99,7 @@ class Star(CelestialBody):
         # 恒星本体（黒い円）を描画
         pygame.draw.circle(screen, BLACK, self.center_pos, self.size / 2)
         # 恒星の縁（オレンジ色の枠）を描画
-        pygame.draw.circle(screen, self.color, self.center_pos, self.size / 2, 2)  # 幅2の枠
+        pygame.draw.circle(screen, self.color, self.center_pos, self.size / 2, CIRCLE_WIDTH)  # 幅2の枠
 
         # 次に、angle付近に砲台を描画します
         for i in range(3):  # 3つの砲台を描画
