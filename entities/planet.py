@@ -99,5 +99,5 @@ class Planet(CelestialBody):
             tjy_x = self.center_pos[0] + self.radius * math.cos(tjy_angle)
             tjy_y = self.center_pos[1] + self.radius * math.sin(tjy_angle)
             tjy_size = self.size * (1 - n / self.TRAJECTORY_NUM)
-            tjy_color = tuple(int(c * (1 - n / self.TRAJECTORY_NUM)) for c in self.color)
+            tjy_color = tuple(int(c * math.sqrt(1 - n / self.TRAJECTORY_NUM)) for c in self.color)
             pygame.draw.circle(screen, tjy_color, (int(tjy_x), int(tjy_y)), int(tjy_size))

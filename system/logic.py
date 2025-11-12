@@ -1,4 +1,4 @@
-# mode/system.py
+# system/logic.py
 
 import math
 
@@ -7,7 +7,7 @@ from entities.planet import Planet
 from entities.star import Star
 from entities.beam import BeamCorpse
 
-class System:
+class Logic:
     """
     ゲームのロジックを管理するクラス
     """
@@ -15,6 +15,11 @@ class System:
     def __init__(self):
         """
         Systemオブジェクトの初期化
+        param center_pos: 惑星と恒星の中心位置 (x, y)
+        param planet_size: 惑星のサイズ(半径)
+        param planet_initial_angle: 惑星の初期角度
+        param planet_orbit_radius: 惑星の公転半径
+        param star_size: 恒星のサイズ(半径)
         """
         # --- オブジェクトの生成 ---
         # Planetオブジェクトを生成

@@ -1,4 +1,4 @@
-# mode/start/ui/start_button.py
+# system/start/ui/start_button.py
 
 import pygame
 

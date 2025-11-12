@@ -1,4 +1,4 @@
-# mode/play/ui/hud.py
+# system/play/ui/hud.py
 
 import pygame
 from config import *

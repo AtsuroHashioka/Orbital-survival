@@ -1,4 +1,4 @@
-# mode/play/ui/play_button.py
+# system/play/ui/play_button.py
 
 import pygame
 import math

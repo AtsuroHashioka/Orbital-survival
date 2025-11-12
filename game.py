@@ -5,12 +5,12 @@ import sys
 import random  
 
 from config import *
-from mode.play.play import Play
-from mode.start.start import Start
+from system.play.play_manager import Play_Manager
+from system.start.start_manager import Start_Manager
 
 class Game:
     """
-    ゲーム全体を管理するメインクラス
+    ゲームシステム全体を管理するメインクラス
     """
 
     def __init__(self):
@@ -26,13 +26,10 @@ class Game:
         
         self.is_running = True # 人間がプレイする際のループ制御用
         self.game_mode = 'start'  # ゲームモードの初期設定
+        self.manager = Start_Manager(self.screen, self.clock)  # ゲームモードマネージャー
 
         # --- 背景の星を生成 ---
         self.background_stars = self._create_stars_(NUM_BACKGROUND_STARS)
-
-        # ゲームモードオブジェクトの初期化
-        self.play = Play(self.screen, self.clock)
-        self.start = Start(self.screen)
 
     #--- 背景の星を生成 ---
     def _create_stars_(self, num_stars):
@@ -62,25 +59,23 @@ class Game:
 
             # ゲームモードごとのイベント処理
             if self.game_mode == 'start':
-                if self.start.start_button.is_pressed(event):
+                if self.manager.start_button.is_pressed(event):
                     self.game_mode = 'play'
-                    self.play.initialize_play_state()  # プレイモードの初期化
+                    self.manager = Play_Manager(self.screen, self.clock)  # Play_Managerのインスタンスを作成
             # 暫定対応
-            elif self.game_mode == 'play':
-                if self.start.start_button.is_pressed(event):
-                    self.game_mode = 'start'
+            # elif self.game_mode == 'play':
+            #     if self.manager.start_button.is_pressed(event):
+            #         self.game_mode = 'start'
+            #         self.manager = Start_Manager(self.screen, self.clock)  # Start_Managerのインスタンスを作成
+            # else:
+            #     pass # 暫定対応
 
     #--- ゲーム状態の更新 ---
     def _update_(self):
         """
         ゲーム内の各オブジェクトの状態を更新する
         """
-        if self.game_mode == 'start':
-            self.start.update()
-        elif self.game_mode == 'play':
-            self.play.update()
-        else:
-            self.start.update()
+        self.manager.update()
 
 
     #--- 描画 ---
@@ -93,12 +88,7 @@ class Game:
         for star_data in self.background_stars:
             pygame.draw.circle(self.screen, star_data['color'], star_data['pos'], star_data['radius'])
 
-        if self.game_mode == 'start':
-            self.start.draw()
-        elif self.game_mode == 'play':
-            self.play.draw()
-        else:
-            self.start.draw()
+        self.manager.draw()
 
         pygame.display.flip()
 

@@ -40,3 +40,6 @@ PLANET_INITIAL_ANGLE = math.pi / 2  # 惑星の初期角度（90度、下方向�
 STAR_SIZE = PLANET_SIZE*3 # 恒星の直径
 STAR_ACCELERATION = 0.0010 # 恒星の角加速度
 STAR_FRICTION = 0.99 # 恒星の減速率
+
+# --- 機械学習に関連するパラメータ ---
+SUB_SCREEN_SIZE = 400
