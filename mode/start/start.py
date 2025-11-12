@@ -3,9 +3,9 @@
 import pygame
 
 from config import *
-from mode.system.ui.system_button import System_Button
+from mode.start.ui.start_button import Start_Button
 
-class System:
+class Start:
     """
     スタート画面を管理するクラス
     """
@@ -17,7 +17,7 @@ class System:
         # 画面の設定
         self.screen = screen
         # スペースキーハンドラを生成
-        self.system_button = System_Button()
+        self.start_button = Start_Button()
         
         # フォントの準備
         font_names = ['consolas', 'dejavusansmono', 'couriernew', 'monospace']

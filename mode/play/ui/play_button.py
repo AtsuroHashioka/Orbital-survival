@@ -1,12 +1,12 @@
-# mode/play/ui/button.py
+# mode/play/ui/play_button.py
 
 import pygame
 import math
-from config import WHITE, BLACK
+from config import *
 
-class Button:
+class Play_Button:
     """
-    スタイリッシュな円形の矢印ボタンを表すクラス
+    プレイ画面の円形の矢印ボタンを表すクラス
     """
     def __init__(self, center_x, center_y, radius, direction):
         """

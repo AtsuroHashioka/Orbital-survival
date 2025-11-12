@@ -1,10 +1,10 @@
-# mode/system/ui/system_button.py
+# mode/start/ui/start_button.py
 
 import pygame
 
 from config import *
 
-class System_Button:
+class Start_Button:
     """
     スペースキーの入力を感知するクラス
     """

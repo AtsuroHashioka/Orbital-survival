@@ -6,7 +6,7 @@ import random
 
 from config import *
 from mode.play.play import Play
-from mode.system.system import System
+from mode.start.start import Start
 
 class Game:
     """
@@ -25,14 +25,14 @@ class Game:
         pygame.display.set_caption("ORBITAL SURVIVAL")
         
         self.is_running = True # 人間がプレイする際のループ制御用
-        self.game_mode = 'system'  # ゲームモードの初期設定
+        self.game_mode = 'start'  # ゲームモードの初期設定
 
         # --- 背景の星を生成 ---
         self.background_stars = self._create_stars_(NUM_BACKGROUND_STARS)
 
         # ゲームモードオブジェクトの初期化
         self.play = Play(self.screen, self.clock)
-        self.system = System(self.screen)
+        self.start = Start(self.screen)
 
     #--- 背景の星を生成 ---
     def _create_stars_(self, num_stars):
@@ -61,25 +61,26 @@ class Game:
                 self.is_running = False
 
             # ゲームモードごとのイベント処理
-            if self.game_mode == 'system':
-                if self.system.system_button.is_pressed(event):
+            if self.game_mode == 'start':
+                if self.start.start_button.is_pressed(event):
                     self.game_mode = 'play'
                     self.play.initialize_play_state()  # プレイモードの初期化
+            # 暫定対応
             elif self.game_mode == 'play':
-                if self.system.system_button.is_pressed(event):
-                    self.game_mode = 'system'
+                if self.start.start_button.is_pressed(event):
+                    self.game_mode = 'start'
 
     #--- ゲーム状態の更新 ---
     def _update_(self):
         """
         ゲーム内の各オブジェクトの状態を更新する
         """
-        if self.game_mode == 'system':
-            self.system.update()
+        if self.game_mode == 'start':
+            self.start.update()
         elif self.game_mode == 'play':
             self.play.update()
         else:
-            self.system.update()
+            self.start.update()
 
 
     #--- 描画 ---
@@ -92,12 +93,12 @@ class Game:
         for star_data in self.background_stars:
             pygame.draw.circle(self.screen, star_data['color'], star_data['pos'], star_data['radius'])
 
-        if self.game_mode == 'system':
-            self.system.draw()
+        if self.game_mode == 'start':
+            self.start.draw()
         elif self.game_mode == 'play':
             self.play.draw()
         else:
-            self.system.draw()
+            self.start.draw()
 
         pygame.display.flip()
 
