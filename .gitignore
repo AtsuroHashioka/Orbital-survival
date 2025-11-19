@@ -29,4 +29,5 @@ venv/
 env/
 
 PROJECT.md
-train/
+*.log
+train*

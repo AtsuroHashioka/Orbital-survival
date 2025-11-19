@@ -12,9 +12,6 @@ class Star(CelestialBody):
     """
     恒星を表すクラス
     """
-    # --- クラス定数 ---
-    ACCELERATION = STAR_ACCELERATION   # 恒星の角加速度
-    FRICTION = STAR_FRICTION# 恒星の摩擦
 
     def __init__(self, center_pos, size):
         """

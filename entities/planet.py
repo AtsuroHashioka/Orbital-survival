@@ -11,11 +11,7 @@ class Planet(CelestialBody):
     惑星を表すクラス
     """
     # --- クラス定数 ---
-    ACCELERATION = PLANET_ACCELERATION
-    FRICTION = PLANET_FRICTION
     ORBIT_RADIUS = PLANET_ORBIT_RADIUS
-
-    MAX_SPEED = ACCELERATION * FRICTION / (1 - FRICTION)
     MAX_TRAJECTORY_LENGTH = 2 * math.pi / 6
     TRAJECTORY_NUM = 60
 

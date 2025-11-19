@@ -2,10 +2,17 @@
 
 import pygame
 
+from config import *
+
 # --- 基底クラス ---
 
 class CelestialBody:
     """惑星や恒星など、回転する天体の基底クラス。"""
+
+    # --- クラス定数 ---
+    ACCELERATION = ACCELERATION
+    FRICTION = FRICTION
+    MAX_SPEED = ACCELERATION * FRICTION / (1 - FRICTION)
 
     def __init__(self, center_pos, size, acceleration, friction, angle, speed):
         self.center_pos = center_pos # 天体の中心座標 (x, y)
