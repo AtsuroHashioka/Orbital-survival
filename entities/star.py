@@ -17,7 +17,7 @@ class Star(CelestialBody):
         """
         Starオブジェクトの初期化
         :param center_pos: 恒星の中心座標 (x, y)
-        :param size: 恒星の直径
+        :param size: 恒星の半径
         """
         super().__init__(
             center_pos=center_pos,

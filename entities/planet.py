@@ -19,7 +19,7 @@ class Planet(CelestialBody):
         """
         Planetオブジェクトの初期化
         :param center_pos: 公転の中心座標 (x, y)
-        :param size: 惑星の直径
+        :param size: 惑星の半径
         :param angle: 惑星の初期角度（ラジアン）
         :param radius: 公転の半径
         """

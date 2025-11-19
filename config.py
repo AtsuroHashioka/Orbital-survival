@@ -33,12 +33,14 @@ BEAM_SPEED = 2           # 光線が広がる速度
 BEAM_MAX_RADIUS = SCREEN_SIZE    # 光線の最大半径(生存判定用)
 
 # Planetに関するパラメータ
-PLANET_SIZE = 12 # 惑星の直径
+PLANET_SIZE = 12 # 惑星の半径
 PLANET_ORBIT_RADIUS = 225  # 惑星の公転半径
 PLANET_INITIAL_ANGLE = math.pi / 2  # 惑星の初期角度（90度、下方向）
 
 # Starに関するパラメータ
-STAR_SIZE = PLANET_SIZE*3 # 恒星の直径
+STAR_SIZE = PLANET_SIZE*3 # 恒星の半径
 
 # --- 機械学習に関連するパラメータ ---
 SUB_SCREEN_SIZE = 400
+
+MAX_BEAMS = 5  # 状態に含めるビームの最大数
