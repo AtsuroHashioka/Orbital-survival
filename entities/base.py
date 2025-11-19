@@ -17,7 +17,7 @@ class CelestialBody:
     def __init__(self, center_pos, size, acceleration, friction, angle, speed):
         self.center_pos = center_pos # 天体の中心座標 (x, y)
         self.size = size # 天体のサイズ
-        self.angle = angle # 天体の角度
+        self.angle = angle % (2 * math.pi) # 天体の角度
         self.speed = speed # 天体の角速度
         self.acceleration = acceleration # 天体の角加速度
         self.friction = friction # 天体の減速率
@@ -30,12 +30,13 @@ class CelestialBody:
         self.speed += self.acceleration * direction # 加速度から速度を更新
         self.speed *= self.friction # 減速率を適用
         self.angle += self.speed # 速度から角度を更新
+        self.angle %= 2 * math.pi # 角度を0〜2πの範囲に収める
 
 class BaseArc:
     """円弧を描画するオブジェクト（光線やその死体）の基底クラス。"""
     def __init__(self, center_pos, angle, arc_range, radius, width, color):
         self.center_pos = center_pos # 円弧の中心座標 (x, y)
-        self.angle = angle # 円弧の中心角度
+        self.angle = angle % (2 * math.pi) # 円弧の中心角度
         self.arc_range = arc_range # 円弧の角度範囲
         self.radius = radius # 円弧の半径
         self.width = width # 円弧の線の幅
