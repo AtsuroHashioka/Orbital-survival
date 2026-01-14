@@ -68,12 +68,12 @@ class Planet(CelestialBody):
         :param screen: 描画対象のPygameスクリーンオブジェクト
         '''
         # --- 軌道の描画 ---
-        self.draw_trajectory(screen)
+        self._draw_trajectory(screen)
 
         # --- 惑星本体の描画 ---
-        self.draw_planet(screen)
+        self._draw_planet(screen)
     
-    def draw_planet(self, screen):
+    def _draw_planet(self, screen):
         """
         惑星本体を画面に描画する
         :param screen: 描画対象のPygameスクリーンオブジェクト
@@ -85,7 +85,7 @@ class Planet(CelestialBody):
         # 惑星の縁（青色の枠）を描画
         pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.size, CIRCLE_WIDTH)  # 幅2の枠
 
-    def draw_trajectory(self, screen):
+    def _draw_trajectory(self, screen):
         """
         惑星の軌道を画面に描画する
         :param screen: 描画対象のPygameスクリーンオブジェクト

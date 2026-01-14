@@ -15,6 +15,16 @@ class CelestialBody:
     MAX_SPEED = ACCELERATION * FRICTION / (1 - FRICTION)
 
     def __init__(self, center_pos, size, acceleration, friction, angle, speed):
+        """
+        天体オブジェクトの初期化
+
+        :param center_pos: 天体の中心座標 (x, y)
+        :param size:　天体のサイズ
+        :param acceleration:　天体の角加速度
+        :param friction: 天体の減速率
+        :param angle: 天体の角度
+        :param speed: 天体の角速度
+        """
         self.center_pos = center_pos # 天体の中心座標 (x, y)
         self.size = size # 天体のサイズ
         self.angle = angle % (2 * math.pi) # 天体の角度
@@ -34,7 +44,18 @@ class CelestialBody:
 
 class BaseArc:
     """円弧を描画するオブジェクト（光線やその死体）の基底クラス。"""
+
     def __init__(self, center_pos, angle, arc_range, radius, width, color):
+        """
+        円弧オブジェクトの初期化
+        
+        :param center_pos: 円弧の中心座標 (x, y)
+        :param angle: 円弧の中心角度
+        :param arc_range: 円弧の角度範囲
+        :param radius: 円弧の半径
+        :param width: 円弧の線の幅
+        :param color: 円弧の色
+        """
         self.center_pos = center_pos # 円弧の中心座標 (x, y)
         self.angle = angle % (2 * math.pi) # 円弧の中心角度
         self.arc_range = arc_range # 円弧の角度範囲
@@ -53,9 +74,9 @@ class BaseArc:
     def draw_arc(self, screen, color, draw_width):
         """
         指定された色と幅で円弧を描画する。
-        param screen: 描画先の画面
-        param color: 描画する色
-        param draw_width: 描画する線の幅
+        :param screen: 描画先の画面
+        :param color: 描画する色
+        :param draw_width: 描画する線の幅
         """
         if draw_width > 0:
             # 円弧の開始角度と終了角度を計算

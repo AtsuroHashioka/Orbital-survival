@@ -15,11 +15,12 @@ class Logic:
     def __init__(self):
         """
         Systemオブジェクトの初期化
-        param center_pos: 惑星と恒星の中心位置 (x, y)
-        param planet_size: 惑星のサイズ(半径)
-        param planet_initial_angle: 惑星の初期角度
-        param planet_orbit_radius: 惑星の公転半径
-        param star_size: 恒星のサイズ(半径)
+        
+        :param center_pos: 惑星と恒星の中心位置 (x, y)
+        :param planet_size: 惑星のサイズ(半径)
+        :param planet_initial_angle: 惑星の初期角度
+        :param planet_orbit_radius: 惑星の公転半径
+        :param star_size: 恒星のサイズ(半径)
         """
         # --- オブジェクトの生成 ---
         # Planetオブジェクトを生成
@@ -54,18 +55,18 @@ class Logic:
         # 恒星の状態をAIに基づいて更新
         self.star.update()
         # 死体の更新
-        self.update_corpses()
+        self._update_corpses()
 
         # 衝突の判定とビームの削除
-        self.check_collisions()
+        self._check_collisions()
 
-    def update_corpses(self):
+    def _update_corpses(self):
         """光線の死体を更新し、寿命が尽きたものを削除する"""
         for corpse in self.corpses:
             corpse.update()
         self.corpses = [c for c in self.corpses if c.is_alive()]
 
-    def check_collisions(self):
+    def _check_collisions(self):
         """惑星と光線の衝突を判定する"""
         planet_angle = self.planet.angle
         planet_orbit_radius = self.planet.radius

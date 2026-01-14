@@ -15,6 +15,7 @@ class Start_Button:
     def is_pressed(self, event):
         """
         キーボードイベントを処理し、スペースキーが押されたら True を返す
+        :param event: pygameのイベントオブジェクト
         """
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:

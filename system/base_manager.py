@@ -8,6 +8,9 @@ class Base_Manager:
     def __init__(self, screen, clock):
         """
         Base_Managerオブジェクトの初期化
+
+        :param screen: 画面オブジェクト
+        :param clock: クロックオブジェクト
         """
         self.screen = screen
         # 時間管理用のClockオブジェクト

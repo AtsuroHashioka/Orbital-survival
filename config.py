@@ -41,6 +41,4 @@ PLANET_INITIAL_ANGLE = math.pi / 2  # 惑星の初期角度（90度、下方向�
 STAR_SIZE = PLANET_SIZE*3 # 恒星の半径
 
 # --- 機械学習に関連するパラメータ ---
-SUB_SCREEN_SIZE = 400
-
-MAX_BEAMS = 5  # 状態に含めるビームの最大数
+MAX_BEAMS = 39  # 状態に含めるビームの最大数 (砲台の数)x(BEAM_MAX_RADIUS - SUN_SIZE)/BEAM_SPEED/(何フレームごとに発射するか)

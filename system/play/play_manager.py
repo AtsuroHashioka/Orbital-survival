@@ -16,14 +16,17 @@ class Play_Manager(Base_Manager):
     def __init__(self, screen, clock):
         """
         PlayManagerオブジェクトの初期化
+
+        :param screen: pygameの画面オブジェクト
+        :param clock: pygameのクロックオブジェクト
         """
        
         super().__init__(screen, clock)
         
         # ゲームの状態を初期化
-        self.initialize_state()
+        self._initialize_state()
 
-    def initialize_state(self):
+    def _initialize_state(self):
         """ゲームの状態を初期化する。"""
         self.start_time = pygame.time.get_ticks() # 経過時間の初期化
 

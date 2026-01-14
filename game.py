@@ -29,10 +29,10 @@ class Game:
         self.manager = Start_Manager(self.screen, self.clock)  # ゲームモードマネージャー
 
         # --- 背景の星を生成 ---
-        self.background_stars = self._create_stars_(NUM_BACKGROUND_STARS)
+        self.background_stars = self._create_stars(NUM_BACKGROUND_STARS)
 
     #--- 背景の星を生成 ---
-    def _create_stars_(self, num_stars):
+    def _create_stars(self, num_stars):
         """背景用の星を生成する"""
         stars = []
         for _ in range(num_stars):
@@ -47,7 +47,7 @@ class Game:
         return stars
 
     #--- イベント処理 ---
-    def _handle_events_(self):
+    def _handle_events(self):
         """
         キーボードやマウスのイベントを処理する
         """
@@ -71,7 +71,7 @@ class Game:
             #     pass # 暫定対応
 
     #--- ゲーム状態の更新 ---
-    def _update_(self):
+    def _update(self):
         """
         ゲーム内の各オブジェクトの状態を更新する
         """
@@ -79,7 +79,7 @@ class Game:
 
 
     #--- 描画 ---
-    def _draw_(self):
+    def _draw(self):
         """
         画面に各オブジェクトを描画する
         """
@@ -100,11 +100,11 @@ class Game:
         # ゲームループ
         while self.is_running:
             # 1. イベント処理
-            self._handle_events_()
+            self._handle_events()
             # 2. ゲームの状態更新
-            self._update_()
+            self._update()
             # 3. ゲームモードの実行
-            self._draw_()
+            self._draw()
             # 4. フレームレートの制御
             self.clock.tick(FPS)
 

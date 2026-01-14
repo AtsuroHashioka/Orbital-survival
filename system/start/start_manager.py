@@ -14,6 +14,9 @@ class Start_Manager(Base_Manager):
     def __init__(self, screen, clock):
         """
         StartManagerオブジェクトの初期化
+
+        :param screen: 画面オブジェクト
+        :param clock: クロックオブジェクト
         """
        
         super().__init__(screen, clock)
