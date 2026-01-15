@@ -2,15 +2,32 @@
 
 import pygame
 
+from config import *
+
 # --- 基底クラス ---
 
 class CelestialBody:
     """惑星や恒星など、回転する天体の基底クラス。"""
 
+    # --- クラス定数 ---
+    ACCELERATION = ACCELERATION
+    FRICTION = FRICTION
+    MAX_SPEED = ACCELERATION * FRICTION / (1 - FRICTION)
+
     def __init__(self, center_pos, size, acceleration, friction, angle, speed):
+        """
+        天体オブジェクトの初期化
+
+        :param center_pos: 天体の中心座標 (x, y)
+        :param size:　天体のサイズ
+        :param acceleration:　天体の角加速度
+        :param friction: 天体の減速率
+        :param angle: 天体の角度
+        :param speed: 天体の角速度
+        """
         self.center_pos = center_pos # 天体の中心座標 (x, y)
         self.size = size # 天体のサイズ
-        self.angle = angle # 天体の角度
+        self.angle = angle % (2 * math.pi) # 天体の角度
         self.speed = speed # 天体の角速度
         self.acceleration = acceleration # 天体の角加速度
         self.friction = friction # 天体の減速率
@@ -23,12 +40,24 @@ class CelestialBody:
         self.speed += self.acceleration * direction # 加速度から速度を更新
         self.speed *= self.friction # 減速率を適用
         self.angle += self.speed # 速度から角度を更新
+        self.angle %= 2 * math.pi # 角度を0〜2πの範囲に収める
 
 class BaseArc:
     """円弧を描画するオブジェクト（光線やその死体）の基底クラス。"""
+
     def __init__(self, center_pos, angle, arc_range, radius, width, color):
+        """
+        円弧オブジェクトの初期化
+        
+        :param center_pos: 円弧の中心座標 (x, y)
+        :param angle: 円弧の中心角度
+        :param arc_range: 円弧の角度範囲
+        :param radius: 円弧の半径
+        :param width: 円弧の線の幅
+        :param color: 円弧の色
+        """
         self.center_pos = center_pos # 円弧の中心座標 (x, y)
-        self.angle = angle # 円弧の中心角度
+        self.angle = angle % (2 * math.pi) # 円弧の中心角度
         self.arc_range = arc_range # 円弧の角度範囲
         self.radius = radius # 円弧の半径
         self.width = width # 円弧の線の幅
@@ -45,9 +74,9 @@ class BaseArc:
     def draw_arc(self, screen, color, draw_width):
         """
         指定された色と幅で円弧を描画する。
-        param screen: 描画先の画面
-        param color: 描画する色
-        param draw_width: 描画する線の幅
+        :param screen: 描画先の画面
+        :param color: 描画する色
+        :param draw_width: 描画する線の幅
         """
         if draw_width > 0:
             # 円弧の開始角度と終了角度を計算

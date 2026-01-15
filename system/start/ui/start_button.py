@@ -1,10 +1,10 @@
-# mode/system/ui/system_button.py
+# system/start/ui/start_button.py
 
 import pygame
 
 from config import *
 
-class System_Button:
+class Start_Button:
     """
     スペースキーの入力を感知するクラス
     """
@@ -15,6 +15,7 @@ class System_Button:
     def is_pressed(self, event):
         """
         キーボードイベントを処理し、スペースキーが押されたら True を返す
+        :param event: pygameのイベントオブジェクト
         """
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:

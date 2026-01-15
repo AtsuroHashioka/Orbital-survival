@@ -1,23 +1,28 @@
-# start/start.py
+# system/start/start_manager.py
 
 import pygame
 
 from config import *
-from mode.system.ui.system_button import System_Button
+from system.base_manager import Base_Manager
+from system.start.ui.start_button import Start_Button
 
-class System:
+class Start_Manager(Base_Manager):
     """
-    スタート画面を管理するクラス
+    スタート画面を管理するサブクラス
     """
 
-    def __init__(self, screen):
+    def __init__(self, screen, clock):
         """
-        Startオブジェクトの初期化
+        StartManagerオブジェクトの初期化
+
+        :param screen: 画面オブジェクト
+        :param clock: クロックオブジェクト
         """
-        # 画面の設定
-        self.screen = screen
+       
+        super().__init__(screen, clock)
+
         # スペースキーハンドラを生成
-        self.system_button = System_Button()
+        self.start_button = Start_Button()
         
         # フォントの準備
         font_names = ['consolas', 'dejavusansmono', 'couriernew', 'monospace']

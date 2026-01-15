@@ -11,11 +11,7 @@ class Planet(CelestialBody):
     惑星を表すクラス
     """
     # --- クラス定数 ---
-    ACCELERATION = PLANET_ACCELERATION
-    FRICTION = PLANET_FRICTION
     ORBIT_RADIUS = PLANET_ORBIT_RADIUS
-
-    MAX_SPEED = ACCELERATION * FRICTION / (1 - FRICTION)
     MAX_TRAJECTORY_LENGTH = 2 * math.pi / 6
     TRAJECTORY_NUM = 60
 
@@ -23,7 +19,7 @@ class Planet(CelestialBody):
         """
         Planetオブジェクトの初期化
         :param center_pos: 公転の中心座標 (x, y)
-        :param size: 惑星の直径
+        :param size: 惑星の半径
         :param angle: 惑星の初期角度（ラジアン）
         :param radius: 公転の半径
         """
@@ -72,12 +68,12 @@ class Planet(CelestialBody):
         :param screen: 描画対象のPygameスクリーンオブジェクト
         '''
         # --- 軌道の描画 ---
-        self.draw_trajectory(screen)
+        self._draw_trajectory(screen)
 
         # --- 惑星本体の描画 ---
-        self.draw_planet(screen)
+        self._draw_planet(screen)
     
-    def draw_planet(self, screen):
+    def _draw_planet(self, screen):
         """
         惑星本体を画面に描画する
         :param screen: 描画対象のPygameスクリーンオブジェクト
@@ -89,7 +85,7 @@ class Planet(CelestialBody):
         # 惑星の縁（青色の枠）を描画
         pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.size, CIRCLE_WIDTH)  # 幅2の枠
 
-    def draw_trajectory(self, screen):
+    def _draw_trajectory(self, screen):
         """
         惑星の軌道を画面に描画する
         :param screen: 描画対象のPygameスクリーンオブジェクト
@@ -99,5 +95,5 @@ class Planet(CelestialBody):
             tjy_x = self.center_pos[0] + self.radius * math.cos(tjy_angle)
             tjy_y = self.center_pos[1] + self.radius * math.sin(tjy_angle)
             tjy_size = self.size * (1 - n / self.TRAJECTORY_NUM)
-            tjy_color = tuple(int(c * (1 - n / self.TRAJECTORY_NUM)) for c in self.color)
+            tjy_color = tuple(int(c * math.sqrt(1 - n / self.TRAJECTORY_NUM)) for c in self.color)
             pygame.draw.circle(screen, tjy_color, (int(tjy_x), int(tjy_y)), int(tjy_size))

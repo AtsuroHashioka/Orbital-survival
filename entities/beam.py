@@ -14,11 +14,13 @@ class Beam(BaseArc):
 
     def __init__(self, center_pos, angle, arc_range, radius, width):
         '''
-        param center_pos: 光線の中心座標 (x, y)
-        param angle: 光線の中心角度
-        param arc_range: 光線の角度範囲
-        param radius: 光線の初期半径（恒星の表面から）
-        param width: 光線の線の幅  
+        光線オブジェクトの初期化
+
+        :param center_pos: 光線の中心座標 (x, y)
+        :param angle: 光線の中心角度
+        :param arc_range: 光線の角度範囲
+        :param radius: 光線の初期半径（恒星の表面から）
+        :param width: 光線の線の幅  
         '''
 
         super().__init__(
@@ -46,7 +48,7 @@ class Beam(BaseArc):
     def draw(self, screen):
         """
         光線を画面に描画する
-        param screen: 描画対象のPygameスクリーンオブジェクト
+        :param screen: 描画対象のPygameスクリーンオブジェクト
         """
 
         # 半径(radius)が惑星の公転半径(225)を超えたらフェードアウト
@@ -69,11 +71,13 @@ class BeamCorpse(BaseArc):
 
     def __init__(self, center_pos, angle, arc_range, radius, width):
         '''
-        param center_pos: 光線の中心座標 (x, y)
-        param angle: 光線の中心角度
-        param arc_range: 光線の角度範囲
-        param radius: 光線の初期半径（恒星が衝突した時の半径）
-        param width: 光線の線の幅  
+        消滅した光線オブジェクトの初期化
+
+        :param center_pos: 光線の中心座標 (x, y)
+        :param angle: 光線の中心角度
+        :param arc_range: 光線の角度範囲
+        :param radius: 光線の初期半径（恒星が衝突した時の半径）
+        :param width: 光線の線の幅  
         '''
         super().__init__(
             center_pos=center_pos,

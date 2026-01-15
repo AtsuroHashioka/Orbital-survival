@@ -12,15 +12,12 @@ class Star(CelestialBody):
     """
     恒星を表すクラス
     """
-    # --- クラス定数 ---
-    ACCELERATION = STAR_ACCELERATION   # 恒星の角加速度
-    FRICTION = STAR_FRICTION# 恒星の摩擦
 
     def __init__(self, center_pos, size):
         """
         Starオブジェクトの初期化
         :param center_pos: 恒星の中心座標 (x, y)
-        :param size: 恒星の直径
+        :param size: 恒星の半径
         """
         super().__init__(
             center_pos=center_pos,
@@ -105,7 +102,9 @@ class Star(CelestialBody):
         for i in range(3):  # 3つの砲台を描画
             arc_radius = self.cannon_radii[i] # 各砲台の半径を使用
             # 位相を3等分
-            cannon_angle = self.angle + (2 * math.pi / 3) * i  
+            cannon_angle = self.angle + (2 * math.pi / 3) * i
+            cannon_angle %= 2 * math.pi  # 角度を0〜2πの範囲に収める
+            # 円弧の開始角度と終了角度を計算  
             start_angle = cannon_angle - self.arc_range / 2
             end_angle = cannon_angle + self.arc_range / 2
             rect = pygame.Rect(self.center_pos[0] - arc_radius, self.center_pos[1] - arc_radius, arc_radius * 2, arc_radius * 2)
