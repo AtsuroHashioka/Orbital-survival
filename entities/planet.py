@@ -4,26 +4,26 @@ import pygame
 import math
 
 from .base import CelestialBody
-from config import *
+from config import BLACK, CIRCLE_WIDTH, EARTH_BLUE, PLANET_ORBIT_RADIUS
 
 
 class Planet(CelestialBody):
     """
-    惑星を表すクラス
+    Class representing the planet.
     """
 
-    # --- クラス定数 ---
+    # --- Class constants ---
     ORBIT_RADIUS = PLANET_ORBIT_RADIUS
     MAX_TRAJECTORY_LENGTH = 2 * math.pi / 6
     TRAJECTORY_NUM = 60
 
     def __init__(self, center_pos, size, angle, radius):
         """
-        Planetオブジェクトの初期化
-        :param center_pos: 公転の中心座標 (x, y)
-        :param size: 惑星の半径
-        :param angle: 惑星の初期角度（ラジアン）
-        :param radius: 公転の半径
+        Initialize a Planet object.
+        :param center_pos: Orbital center position (x, y)
+        :param size: Planet radius
+        :param angle: Initial planet angle (radians)
+        :param radius: Orbital radius
         """
         super().__init__(
             center_pos=center_pos,
@@ -33,66 +33,66 @@ class Planet(CelestialBody):
             angle=angle,
             speed=0.0,
         )
-        self.radius = radius  # 公転の半径
+        self.radius = radius  # Orbital radius
         self.color = EARTH_BLUE
 
-        # 表示用に、フレームごとの実際の角加速度を保持する
+        # Keep per-frame actual angular acceleration for display
         self.actual_acceleration = 0.0
 
-        # 最初の座標を計算し、矩形の位置を合わせる
+        # Compute initial coordinates
         self.x = self.center_pos[0] + self.radius * math.cos(self.angle)
         self.y = self.center_pos[1] + self.radius * math.sin(self.angle)
 
     def update(self, direction):
         """
-        惑星の状態を毎フレーム更新する
-        1. 入力と摩擦を考慮して現在の速度，角度を計算
-        2. 表示用の角加速度を算出
-        3. 位置を更新
-        :param direction: ユーザーからの入力方向 (-1: 左, 0: 無し, 1: 右)
+        Update planet state every frame.
+        1. Compute current speed and angle with input and friction.
+        2. Compute angular acceleration for HUD display.
+        3. Update position.
+        :param direction: User input direction (-1: left, 0: none, 1: right)
         """
-        # 実際の加速度を計算するために、更新前の速度を保存
+        # Store speed before update to compute actual acceleration
         speed_before_update = self.speed
 
-        # 速度，角度を更新
+        # Update speed and angle
         self.update_angle_and_speed(direction)
 
-        # HUD表示用の各加速度を計算
+        # Compute acceleration values for HUD
         self.actual_acceleration = self.speed - speed_before_update
 
-        # (x,y)座標を計算
+        # Compute (x, y) coordinates
         self.x = self.center_pos[0] + self.radius * math.cos(self.angle)
         self.y = self.center_pos[1] + self.radius * math.sin(self.angle)
 
     def draw(self, screen):
         """
-        惑星本体と軌道の描画
-        :param screen: 描画対象のPygameスクリーンオブジェクト
+        Draw the planet and its trajectory.
+        :param screen: Target Pygame screen object
         """
-        # --- 軌道の描画 ---
+        # --- Draw trajectory ---
         self._draw_trajectory(screen)
 
-        # --- 惑星本体の描画 ---
+        # --- Draw planet body ---
         self._draw_planet(screen)
 
     def _draw_planet(self, screen):
         """
-        惑星本体を画面に描画する
-        :param screen: 描画対象のPygameスクリーンオブジェクト
+        Draw the planet body on the screen.
+        :param screen: Target Pygame screen object
         """
 
-        # --- 本体（ボール）の描画 ---
-        # 惑星本体（黒い円）を描画
+        # --- Draw body ---
+        # Draw main planet body (black circle)
         pygame.draw.circle(screen, BLACK, (int(self.x), int(self.y)), self.size)
-        # 惑星の縁（青色の枠）を描画
+        # Draw planet outline (blue border)
         pygame.draw.circle(
             screen, self.color, (int(self.x), int(self.y)), self.size, CIRCLE_WIDTH
-        )  # 幅2の枠
+        )  # Border width: 2
 
     def _draw_trajectory(self, screen):
         """
-        惑星の軌道を画面に描画する
-        :param screen: 描画対象のPygameスクリーンオブジェクト
+        Draw the planet trajectory on the screen.
+        :param screen: Target Pygame screen object
         """
         for n in range(self.TRAJECTORY_NUM):
             tjy_angle = self.angle - self.MAX_TRAJECTORY_LENGTH * (
@@ -107,4 +107,3 @@ class Planet(CelestialBody):
             pygame.draw.circle(
                 screen, tjy_color, (int(tjy_x), int(tjy_y)), int(tjy_size)
             )
-

@@ -3,29 +3,28 @@
 
 class Base_Manager:
     """
-    ゲームモードの基底クラス
+    Base class for game modes.
     """
 
     def __init__(self, screen, clock):
         """
-        Base_Managerオブジェクトの初期化
+        Initialize a Base_Manager object.
 
-        :param screen: 画面オブジェクト
-        :param clock: クロックオブジェクト
+        :param screen: Screen object
+        :param clock: Clock object
         """
         self.screen = screen
-        # 時間管理用のClockオブジェクト
+        # Clock object for time management
         self.clock = clock
 
     def update(self):
         """
-        ゲーム内の各オブジェクトの状態を更新する
+        Update the state of in-game objects.
         """
         pass
 
     def draw(self):
         """
-        画面に各オブジェクトを描画する
+        Draw objects on the screen.
         """
         pass
-

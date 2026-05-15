@@ -1,61 +1,68 @@
 # entities/beam.py
 
 from .base import BaseArc
-from config import *
+from config import (
+    BEAM_MAX_RADIUS,
+    BEAM_SPEED,
+    FPS,
+    PLANET_ORBIT_RADIUS,
+    RED,
+    WHITE,
+)
 
 
 class Beam(BaseArc):
     """
-    恒星から発射される光線を表すクラス
+    Class representing a beam emitted from the star.
     """
 
-    # -- クラス定数 ---
+    # -- Class constants ---
     SPEED = BEAM_SPEED
     MAX_RADIUS = BEAM_MAX_RADIUS
 
     def __init__(self, center_pos, angle, arc_range, radius, width):
         """
-        光線オブジェクトの初期化
+        Initialize a beam object.
 
-        :param center_pos: 光線の中心座標 (x, y)
-        :param angle: 光線の中心角度
-        :param arc_range: 光線の角度範囲
-        :param radius: 光線の初期半径（恒星の表面から）
-        :param width: 光線の線の幅
+        :param center_pos: Beam center position (x, y)
+        :param angle: Beam center angle
+        :param arc_range: Beam angle range
+        :param radius: Initial beam radius (from star surface)
+        :param width: Beam line width
         """
 
         super().__init__(
             center_pos=center_pos,
             angle=angle,
             arc_range=arc_range,
-            radius=radius,  # 発射時の初期半径（恒星の表面から）
+            radius=radius,  # Initial radius at emission (from star surface)
             width=width,
             color=WHITE,
         )
-        self.dodged = False  # 回避されたかどうかを記録するフラグ
+        self.dodged = False  # Flag to track whether this beam was dodged
 
     def update(self):
         """
-        光線の状態を更新する
+        Update beam state.
         """
-        self.radius += self.SPEED  # 光線が広がる速度で半径を増加
+        self.radius += self.SPEED  # Increase radius at beam expansion speed
 
     def is_alive(self):
         """
-        光線がまだ有効かどうかを判定する
+        Determine whether the beam is still active.
         """
-        return self.radius < self.MAX_RADIUS  # 最大半径に達していないか判定
+        return self.radius < self.MAX_RADIUS  # Check if max radius is not reached
 
     def draw(self, screen):
         """
-        光線を画面に描画する
-        :param screen: 描画対象のPygameスクリーンオブジェクト
+        Draw the beam on the screen.
+        :param screen: Target Pygame screen object
         """
 
-        # 半径(radius)が惑星の公転半径(225)を超えたらフェードアウト
+        # Fade out once radius exceeds the planet orbit radius (225)
         fade_distance = self.MAX_RADIUS - PLANET_ORBIT_RADIUS
 
-        # フェードアウトの進行度合いを計算 (0.0: フェード開始, 1.0: フェード完了)
+        # Compute fade progress (0.0: start, 1.0: complete)
         fade_progress = (
             max(0, (self.radius - PLANET_ORBIT_RADIUS)) / fade_distance
             if fade_distance > 0
@@ -71,20 +78,20 @@ class Beam(BaseArc):
 
 class BeamCorpse(BaseArc):
     """
-    衝突時に表示される光線の「死体」を表すクラス
+    Class representing a beam "corpse" shown after collision.
     """
 
-    DURATION = FPS // 4  # 表示時間 (0.25秒)
+    DURATION = FPS // 4  # Display duration (0.25 seconds)
 
     def __init__(self, center_pos, angle, arc_range, radius, width):
         """
-        消滅した光線オブジェクトの初期化
+        Initialize a destroyed beam object.
 
-        :param center_pos: 光線の中心座標 (x, y)
-        :param angle: 光線の中心角度
-        :param arc_range: 光線の角度範囲
-        :param radius: 光線の初期半径（恒星が衝突した時の半径）
-        :param width: 光線の線の幅
+        :param center_pos: Beam center position (x, y)
+        :param angle: Beam center angle
+        :param arc_range: Beam angle range
+        :param radius: Beam radius at collision time
+        :param width: Beam line width
         """
         super().__init__(
             center_pos=center_pos,
@@ -94,27 +101,26 @@ class BeamCorpse(BaseArc):
             width=width,
             color=RED,
         )
-        self.life = self.DURATION  # 残りの表示時間
+        self.life = self.DURATION  # Remaining display time
 
     def update(self):
         """
-        死体の状態を更新する（フェードアウト）
+        Update corpse state (fade-out).
         """
         self.life -= 1
 
     def is_alive(self):
         """
-        死体がまだ表示されるべきか判定
+        Determine whether the corpse should still be displayed.
         """
         return self.life > 0
 
     def draw(self, screen):
         """
-        死体を描画する（フェードアウト）
-        :param screen: 描画対象のPygameスクリーンオブジェクト
+        Draw the corpse (fade-out).
+        :param screen: Target Pygame screen object
         """
         if self.is_alive():
             life_ratio = self.life / self.DURATION
             current_color = tuple(int(c * life_ratio) for c in self.color)
             self.draw_arc(screen, current_color, self.width)
-

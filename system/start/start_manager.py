@@ -2,56 +2,55 @@
 
 import pygame
 
-from config import *
+from config import GREEN, SCREEN_HEIGHT, SCREEN_WIDTH, WHITE
 from system.base_manager import Base_Manager
 from system.start.ui.start_button import Start_Button
 
 
 class Start_Manager(Base_Manager):
     """
-    スタート画面を管理するサブクラス
+    Subclass that manages the start screen.
     """
 
     def __init__(self, screen, clock):
         """
-        StartManagerオブジェクトの初期化
+        Initialize a StartManager object.
 
-        :param screen: 画面オブジェクト
-        :param clock: クロックオブジェクト
+        :param screen: Screen object
+        :param clock: Clock object
         """
 
         super().__init__(screen, clock)
 
-        # スペースキーハンドラを生成
+        # Create space-key handler
         self.start_button = Start_Button()
 
-        # フォントの準備
+        # Prepare fonts
         font_names = ["consolas", "dejavusansmono", "couriernew", "monospace"]
         self.title_font = pygame.font.SysFont(font_names, 74)
         self.prompt_font = pygame.font.SysFont(font_names, 36)
 
     def update(self):
         """
-        ゲーム内の各オブジェクトの状態を更新する
+        Update the state of in-game objects.
         """
         pass
 
     def draw(self):
         """
-        画面に各オブジェクトを描画する
+        Draw objects on the screen.
         """
 
-        # 画面中央にゲームタイトルを表示
+        # Show game title in the center of the screen
         title_text = self.title_font.render("ORBITAL SURVIVAL", True, WHITE)
         title_rect = title_text.get_rect(
             center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 50)
         )
         self.screen.blit(title_text, title_rect)
 
-        # タイトルの下に "Press SPACE" を表示
+        # Show "Press SPACE" under the title
         prompt_text = self.prompt_font.render("PRESS SPACE TO PLAY", True, GREEN)
         prompt_rect = prompt_text.get_rect(
             center=(SCREEN_WIDTH / 2, title_rect.bottom + 30)
         )
         self.screen.blit(prompt_text, prompt_rect)
-

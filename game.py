@@ -4,88 +4,86 @@ import pygame
 import sys
 import random
 
-from config import *
+from config import BLACK, FPS, NUM_BACKGROUND_STARS, SCREEN_HEIGHT, SCREEN_WIDTH
 from system.play.play_manager import Play_Manager
 from system.start.start_manager import Start_Manager
 
 
 class Game:
     """
-    ゲームシステム全体を管理するメインクラス
+    Main class that manages the entire game system.
     """
 
     def __init__(self):
         """
-        Gameオブジェクトの初期化
+        Initialize the Game object.
         """
-        # Pygameの初期化
+        # Initialize Pygame
         pygame.init()
-        # 画面の設定
+        # Configure display
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
         pygame.display.set_caption("ORBITAL SURVIVAL")
 
-        self.is_running = True  # 人間がプレイする際のループ制御用
-        self.game_mode = "start"  # ゲームモードの初期設定
-        self.manager = Start_Manager(
-            self.screen, self.clock
-        )  # ゲームモードマネージャー
+        self.is_running = True  # Loop control for human play
+        self.game_mode = "start"  # Initial game mode
+        self.manager = Start_Manager(self.screen, self.clock)  # Game mode manager
 
-        # --- 背景の星を生成 ---
+        # --- Create background stars ---
         self.background_stars = self._create_stars(NUM_BACKGROUND_STARS)
 
-    # --- 背景の星を生成 ---
+    # --- Create background stars ---
     def _create_stars(self, num_stars):
-        """背景用の星を生成する"""
+        """Create stars for the background."""
         stars = []
         for _ in range(num_stars):
             x = random.randint(0, SCREEN_WIDTH)
             y = random.randint(0, SCREEN_HEIGHT)
-            # 小さい星を多く、大きい星を少なく
+            # Use many small stars and fewer large stars
             radius = random.choice([1, 1, 1, 2])
-            # 明るさをランダムに設定
+            # Randomize brightness
             brightness = random.randint(50, 150)
             color = (brightness, brightness, brightness)
             stars.append({"pos": (x, y), "radius": radius, "color": color})
         return stars
 
-    # --- イベント処理 ---
+    # --- Event handling ---
     def _handle_events(self):
         """
-        キーボードやマウスのイベントを処理する
+        Handle keyboard and mouse events.
         """
 
         for event in pygame.event.get():
-            # ウィンドウの閉じるボタンが押されたらループを抜ける
+            # Exit loop when the window close button is pressed
             if event.type == pygame.QUIT:
                 self.is_running = False
 
-            # ゲームモードごとのイベント処理
+            # Handle events by game mode
             if self.game_mode == "start":
                 if self.manager.start_button.is_pressed(event):
                     self.game_mode = "play"
                     self.manager = Play_Manager(
                         self.screen, self.clock
-                    )  # Play_Managerのインスタンスを作成
-            # 暫定対応
+                    )  # Create a Play_Manager instance
+            # Temporary handling
             # elif self.game_mode == 'play':
             #     if self.manager.start_button.is_pressed(event):
             #         self.game_mode = 'start'
-            #         self.manager = Start_Manager(self.screen, self.clock)  # Start_Managerのインスタンスを作成
+            #         self.manager = Start_Manager(self.screen, self.clock)  # Create a Start_Manager instance
             # else:
-            #     pass # 暫定対応
+            #     pass # Temporary handling
 
-    # --- ゲーム状態の更新 ---
+    # --- Update game state ---
     def _update(self):
         """
-        ゲーム内の各オブジェクトの状態を更新する
+        Update the state of in-game objects.
         """
         self.manager.update()
 
-    # --- 描画 ---
+    # --- Rendering ---
     def _draw(self):
         """
-        画面に各オブジェクトを描画する
+        Draw objects on the screen.
         """
         self.screen.fill(BLACK)
 
@@ -100,20 +98,20 @@ class Game:
 
     def run(self):
         """
-        ゲームのメインループ
+        Main game loop.
         """
 
-        # ゲームループ
+        # Game loop
         while self.is_running:
-            # 1. イベント処理
+            # 1. Handle events
             self._handle_events()
-            # 2. ゲームの状態更新
+            # 2. Update game state
             self._update()
-            # 3. ゲームモードの実行
+            # 3. Run game-mode drawing
             self._draw()
-            # 4. フレームレートの制御
+            # 4. Control frame rate
             self.clock.tick(FPS)
 
-        # ゲーム終了処理
+        # Shutdown handling
         pygame.quit()
         sys.exit()

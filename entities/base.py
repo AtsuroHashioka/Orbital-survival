@@ -1,91 +1,92 @@
 # entities/base.py
 
+import math
 import pygame
 
-from config import *
+from config import ACCELERATION as CFG_ACCELERATION, FRICTION as CFG_FRICTION
 
-# --- 基底クラス ---
+# --- Base classes ---
 
 
 class CelestialBody:
-    """惑星や恒星など、回転する天体の基底クラス。"""
+    """Base class for rotating celestial bodies such as planets and stars."""
 
-    # --- クラス定数 ---
-    ACCELERATION = ACCELERATION
-    FRICTION = FRICTION
+    # --- Class constants ---
+    ACCELERATION = float(CFG_ACCELERATION)
+    FRICTION = float(CFG_FRICTION)
     MAX_SPEED = ACCELERATION * FRICTION / (1 - FRICTION)
 
     def __init__(self, center_pos, size, acceleration, friction, angle, speed):
         """
-        天体オブジェクトの初期化
+        Initialize a celestial body.
 
-        :param center_pos: 天体の中心座標 (x, y)
-        :param size:　天体のサイズ
-        :param acceleration:　天体の角加速度
-        :param friction: 天体の減速率
-        :param angle: 天体の角度
-        :param speed: 天体の角速度
+        :param center_pos: Center position of the body (x, y)
+        :param size: Body size
+        :param acceleration: Angular acceleration
+        :param friction: Deceleration ratio
+        :param angle: Angular position
+        :param speed: Angular speed
         """
-        self.center_pos = center_pos  # 天体の中心座標 (x, y)
-        self.size = size  # 天体のサイズ
-        self.angle = angle % (2 * math.pi)  # 天体の角度
-        self.speed = speed  # 天体の角速度
-        self.acceleration = acceleration  # 天体の角加速度
-        self.friction = friction  # 天体の減速率
+        self.center_pos = center_pos  # Center position of the body (x, y)
+        self.size = size  # Body size
+        self.angle = angle % (2 * math.pi)  # Angular position
+        self.speed = speed  # Angular speed
+        self.acceleration = acceleration  # Angular acceleration
+        self.friction = friction  # Deceleration ratio
 
     def update_angle_and_speed(self, direction):
         """
-        物理法則（加速と摩擦）を適用して速度と角度を更新する。
-        param direction: 加速度の方向（1: 正方向, -1: 負方向）
+        Apply acceleration and friction to update speed and angle.
+        param direction: Acceleration direction (1: positive, -1: negative)
         """
-        self.speed += self.acceleration * direction  # 加速度から速度を更新
-        self.speed *= self.friction  # 減速率を適用
-        self.angle += self.speed  # 速度から角度を更新
-        self.angle %= 2 * math.pi  # 角度を0〜2πの範囲に収める
+        self.speed += self.acceleration * direction  # Update speed from acceleration
+        self.speed *= self.friction  # Apply deceleration
+        self.angle += self.speed  # Update angle from speed
+        self.angle %= 2 * math.pi  # Keep angle in the range [0, 2π)
 
 
 class BaseArc:
-    """円弧を描画するオブジェクト（光線やその死体）の基底クラス。"""
+    """Base class for arc-drawing objects (beams and beam corpses)."""
 
     def __init__(self, center_pos, angle, arc_range, radius, width, color):
         """
-        円弧オブジェクトの初期化
+        Initialize an arc object.
 
-        :param center_pos: 円弧の中心座標 (x, y)
-        :param angle: 円弧の中心角度
-        :param arc_range: 円弧の角度範囲
-        :param radius: 円弧の半径
-        :param width: 円弧の線の幅
-        :param color: 円弧の色
+        :param center_pos: Arc center position (x, y)
+        :param angle: Arc center angle
+        :param arc_range: Arc angle range
+        :param radius: Arc radius
+        :param width: Arc line width
+        :param color: Arc color
         """
-        self.center_pos = center_pos  # 円弧の中心座標 (x, y)
-        self.angle = angle % (2 * math.pi)  # 円弧の中心角度
-        self.arc_range = arc_range  # 円弧の角度範囲
-        self.radius = radius  # 円弧の半径
-        self.width = width  # 円弧の線の幅
-        self.color = color  # 円弧の色
+        self.center_pos = center_pos  # Arc center position (x, y)
+        self.angle = angle % (2 * math.pi)  # Arc center angle
+        self.arc_range = arc_range  # Arc angle range
+        self.radius = radius  # Arc radius
+        self.width = width  # Arc line width
+        self.color = color  # Arc color
 
     def update(self):
-        """状態を更新する。サブクラスで実装。"""
+        """Update state. Implemented in subclasses."""
         raise NotImplementedError
 
     def is_alive(self):
-        """生存しているか。サブクラスで実装。"""
+        """Return whether object is alive. Implemented in subclasses."""
         raise NotImplementedError
 
     def draw_arc(self, screen, color, draw_width):
         """
-        指定された色と幅で円弧を描画する。
-        :param screen: 描画先の画面
-        :param color: 描画する色
-        :param draw_width: 描画する線の幅
+        Draw an arc with the specified color and line width.
+        :param screen: Target screen
+        :param color: Color to draw
+        :param draw_width: Line width to draw
         """
         if draw_width > 0:
-            # 円弧の開始角度と終了角度を計算
+            # Compute start and end angles of the arc
             start_angle = self.angle - self.arc_range / 2
             end_angle = self.angle + self.arc_range / 2
 
-            # 円弧を描画するための矩形を作成
+            # Create the rectangle used to draw the arc
             rect = pygame.Rect(
                 int(self.center_pos[0] - self.radius),
                 int(self.center_pos[1] - self.radius),
@@ -93,4 +94,3 @@ class BaseArc:
                 int(self.radius * 2),
             )
             pygame.draw.arc(screen, color, rect, start_angle, end_angle, draw_width)
-

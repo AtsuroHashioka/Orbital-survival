@@ -6,49 +6,49 @@ import random
 
 from .base import CelestialBody
 from .beam import Beam
-from config import *
+from config import BLACK, CIRCLE_WIDTH, FPS, SUN_ORANGE
 
 
 class Star(CelestialBody):
     """
-    恒星を表すクラス
+    Class representing the star.
     """
 
     def __init__(self, center_pos, size):
         """
-        Starオブジェクトの初期化
-        :param center_pos: 恒星の中心座標 (x, y)
-        :param size: 恒星の半径
+        Initialize a Star object.
+        :param center_pos: Star center position (x, y)
+        :param size: Star radius
         """
         super().__init__(
             center_pos=center_pos,
             size=size,
             acceleration=self.ACCELERATION,
             friction=self.FRICTION,
-            # 初期角度と速度はランダムに設定
+            # Set initial angle and speed randomly
             angle=random.uniform(0, 2 * math.pi),
             speed=random.uniform(-0.005, 0.005),
         )
         self.color = SUN_ORANGE
-        self.arc_range = math.pi * 60 / 360  # 黒い円弧の描画範囲
+        self.arc_range = math.pi * 60 / 360  # Draw range of black arc
 
-        # ランダム制御用のタイマーと現在の進行方向
+        # Timer and current direction for random control
         self.random_timer = 0
         self.random_direction = 0
         self.beam_timer = 0
 
-        # 砲台の発光を制御するためのタイマー
+        # Timers and state for cannon flash effects
         self.cannon_flash_timers = [0, 0, 0]
-        self.beams = []  # 発射した光線を管理するリスト
-        self.cannon_initial_radius = self.size  # 砲台の初期半径を保存
-        self.cannon_radii = [self.cannon_initial_radius] * 3  # 各砲台の半径
+        self.beams = []  # List of emitted beams
+        self.cannon_initial_radius = self.size  # Initial cannon radius
+        self.cannon_radii = [self.cannon_initial_radius] * 3  # Radius of each cannon
 
     def update(self):
         """
-        ランダムに恒星の自転（位相）を更新し、光線を発射する。
+        Randomly update star rotation (phase) and emit beams.
         """
-        # 光線の更新と削除
-        for beam in self.beams[:]:  # コピーをループして、ループ中に安全に削除
+        # Update and remove beams
+        for beam in self.beams[:]:  # Iterate over a copy to remove safely during loop
             beam.update()
             if not beam.is_alive():
                 self.beams.remove(beam)
@@ -56,20 +56,20 @@ class Star(CelestialBody):
         self.random_timer += 1
         self.beam_timer += 1
 
-        # 加速度をランダムに変更
+        # Randomly change acceleration direction
         if self.random_timer >= FPS // 8:
             self.random_timer = 0
-            # 加速度0を選ぶ確率を20%、左右をそれぞれ40%に設定
+            # Set probabilities: 20% for 0, 40% each for left/right
             self.random_direction = random.choices(
                 [-1, 0, 1], weights=[40, 20, 40], k=1
             )[0]
 
-        # 光線を発射
+        # Emit beams
         if self.beam_timer >= FPS // 8:
             self.beam_timer = 0
-            # 3つの砲台から光線を発射
+            # Emit beams from the three cannons
             for i in range(3):
-                if random.random() < 0.20:  # 20%の確率で発射
+                if random.random() < 0.20:  # 20% chance to fire
                     cannon_angle = self.angle + (2 * math.pi / 3) * i
                     beam = Beam(
                         self.center_pos,
@@ -79,14 +79,14 @@ class Star(CelestialBody):
                         int(self.size // 4),
                     )
                     self.beams.append(beam)
-                    # 発射エフェクト：対応する砲台の半径を一時的に小さくする
+                    # Firing effect: temporarily shrink corresponding cannon radius
                     self.cannon_radii[i] = self.cannon_initial_radius * 0.75
 
-        # 各砲台の半径を徐々に初期サイズに戻す
+        # Gradually restore each cannon radius to initial size
         for i in range(3):
             if self.cannon_radii[i] < self.cannon_initial_radius:
-                self.cannon_radii[i] += 0.5  # 半径の回復速度
-                # 初期半径を超えないように補正
+                self.cannon_radii[i] += 0.5  # Radius recovery speed
+                # Clamp so it does not exceed initial radius
                 if self.cannon_radii[i] > self.cannon_initial_radius:
                     self.cannon_radii[i] = self.cannon_initial_radius
 
@@ -94,27 +94,27 @@ class Star(CelestialBody):
 
     def draw(self, screen):
         """
-        恒星、砲台、光線を画面に描画する
-        :param screen: 描画対象のPygameスクリーンオブジェクト
+        Draw the star, cannons, and beams on the screen.
+        :param screen: Target Pygame screen object
         """
-        # 発射された光線を描画 (恒星より奥にあるように見せるため先に描画)
+        # Draw emitted beams first so they appear behind the star
         for beam in self.beams:
             beam.draw(screen)
 
-        # 恒星本体（黒い円）を描画
+        # Draw star body (black circle)
         pygame.draw.circle(screen, BLACK, self.center_pos, self.size / 2)
-        # 恒星の縁（オレンジ色の枠）を描画
+        # Draw star outline (orange border)
         pygame.draw.circle(
             screen, self.color, self.center_pos, self.size / 2, CIRCLE_WIDTH
-        )  # 幅2の枠
+        )  # Border width: 2
 
-        # 次に、angle付近に砲台を描画します
-        for i in range(3):  # 3つの砲台を描画
-            arc_radius = self.cannon_radii[i]  # 各砲台の半径を使用
-            # 位相を3等分
+        # Draw cannons around the current angle
+        for i in range(3):  # Draw three cannons
+            arc_radius = self.cannon_radii[i]  # Use radius for each cannon
+            # Split phase into three equal parts
             cannon_angle = self.angle + (2 * math.pi / 3) * i
-            cannon_angle %= 2 * math.pi  # 角度を0〜2πの範囲に収める
-            # 円弧の開始角度と終了角度を計算
+            cannon_angle %= 2 * math.pi  # Keep angle in the range [0, 2π)
+            # Compute start and end angles of arc
             start_angle = cannon_angle - self.arc_range / 2
             end_angle = cannon_angle + self.arc_range / 2
             rect = pygame.Rect(
@@ -126,4 +126,3 @@ class Star(CelestialBody):
             pygame.draw.arc(
                 screen, self.color, rect, start_angle, end_angle, int(self.size // 4)
             )
-

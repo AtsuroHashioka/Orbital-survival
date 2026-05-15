@@ -2,21 +2,19 @@
 
 import pygame
 
-from config import *
-
 
 class Start_Button:
     """
-    スペースキーの入力を感知するクラス
+    Class that detects space-key input.
     """
 
     def __init__(self):
-        pass  # 初期化は特に必要なし
+        pass  # No specific initialization needed
 
     def is_pressed(self, event):
         """
-        キーボードイベントを処理し、スペースキーが押されたら True を返す
-        :param event: pygameのイベントオブジェクト
+        Process keyboard events and return True when SPACE is pressed.
+        :param event: Pygame event object
         """
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:

@@ -2,7 +2,6 @@
 from game import Game
 
 if __name__ == "__main__":
-    # Gameオブジェクトを生成し、ゲームを開始
+    # Create the Game object and start the game
     game = Game()
     game.run()
-

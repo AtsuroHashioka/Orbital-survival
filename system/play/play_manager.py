@@ -2,7 +2,7 @@
 
 import pygame
 
-from config import *
+from config import BUTTON_RADIUS, SCREEN_HEIGHT, SCREEN_WIDTH
 from system.logic import Logic
 from system.base_manager import Base_Manager
 from system.play.ui.play_button import Play_Button
@@ -11,64 +11,64 @@ from system.play.ui.hud import HUD
 
 class Play_Manager(Base_Manager):
     """
-    PLAYモードを管理するサブクラス
+    Subclass that manages PLAY mode.
     """
 
     def __init__(self, screen, clock):
         """
-        PlayManagerオブジェクトの初期化
+        Initialize a PlayManager object.
 
-        :param screen: pygameの画面オブジェクト
-        :param clock: pygameのクロックオブジェクト
+        :param screen: Pygame screen object
+        :param clock: Pygame clock object
         """
 
         super().__init__(screen, clock)
 
-        # ゲームの状態を初期化
+        # Initialize game state
         self._initialize_state()
 
     def _initialize_state(self):
-        """ゲームの状態を初期化する。"""
-        self.start_time = pygame.time.get_ticks()  # 経過時間の初期化
+        """Initialize game state."""
+        self.start_time = pygame.time.get_ticks()  # Initialize elapsed-time reference
 
-        # --- オブジェクトの生成 ---
-        # logicオブジェクトを生成
+        # --- Create objects ---
+        # Create logic object
         self.logic = Logic()
 
-        # 円形ボタンを画面左右中心に配置
+        # Place circular buttons at lower left/right center
         self.left_button = Play_Button(
             SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT - 80, BUTTON_RADIUS, "left"
         )
         self.right_button = Play_Button(
             SCREEN_WIDTH / 2 + 100, SCREEN_HEIGHT - 80, BUTTON_RADIUS, "right"
         )
-        # HUDオブジェクトを生成
+        # Create HUD object
         self.hud = HUD()
 
     def update(self):
         """
-        ゲーム内の各オブジェクトの状態を更新する
+        Update the state of in-game objects.
         """
-        # --- 惑星の操作（キーボードとマウスの両方に対応） ---
+        # --- Planet control (supports keyboard and mouse) ---
         keys = pygame.key.get_pressed()
         mouse_buttons = pygame.mouse.get_pressed()
         mouse_pos = pygame.mouse.get_pos()
 
-        # 左方向への加速判定 (左キー or 左ボタンクリック)
+        # Left acceleration check (left key or left button click)
         self.logic.left_active = keys[pygame.K_LEFT] or (
             mouse_buttons[0] and self.left_button.is_clicked(mouse_pos)
         )
-        # 右方向への加速判定 (右キー or 右ボタンクリック)
+        # Right acceleration check (right key or right button click)
         self.logic.right_active = keys[pygame.K_RIGHT] or (
             mouse_buttons[0] and self.right_button.is_clicked(mouse_pos)
         )
 
-        # logicオブジェクトの状態を更新
+        # Update logic object state
         self.logic.update()
 
     def draw(self):
         """
-        画面に各オブジェクトを描画する
+        Draw objects on the screen.
         """
 
         for corpse in self.logic.corpses:

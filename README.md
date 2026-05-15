@@ -1,31 +1,88 @@
 # Orbital Survival
 
-宇宙空間を舞台にした2Dサバイバルゲームです。
+A 2D survival game set in space.  
+Control your planet, dodge rotating star beams, and survive as long as possible.
 
-## 概要
+![Gamestart](img/Start.png)
+![Gameplay](img/Play.png)
 
-プレイヤーは天体を操作し、公転軌道上を生き残ることを目指します。
+## Overview
 
-## 要件
+You orbit around the center while a star emits beam attacks.  
+Your goal is to avoid collisions and keep your score growing.
 
-- Python 3.8 以上
-- Pygame
+## Features
 
-## インストールと実行方法
+- Planet movement with acceleration + friction
+- Randomized star rotation and beam firing
+- Real-time HUD (speed, acceleration, score, collision count, elapsed time)
+- Keyboard and mouse support
 
-1. **必要なライブラリをインストールします:**
+## Requirements
 
-   ```bash
-   pip install pygame
-   ```
+- Python 3.12+
+- uv
 
-2. **ゲームを実行します:**
+## Installation
 
-   ```bash
-   python main.py
-   ```
+```bash
+uv sync
+```
 
-## 操作方法
+## Run
 
-- **[>]**: 右に移動
-- **[<]**: 左に移動
+```bash
+uv run python main.py
+```
+
+## Controls
+
+- Left arrow key: accelerate left
+- Right arrow key: accelerate right
+- Mouse: click and hold the on-screen left/right buttons
+
+## Scoring
+
+- Dodge a beam: `+10`
+- Get hit by a beam: `-200` and collision count (`KILLED`) increases by 1
+
+## Project Structure
+
+```text
+.
+├── .gitignore
+├── .python-version
+├── __init__.py
+├── config.py
+├── entities
+│  ├── __init__.py
+│  ├── base.py
+│  ├── beam.py
+│  ├── planet.py
+│  └── star.py
+├── game.py
+├── img
+│  ├── Play.png
+│  └── Start.png
+├── main.py
+├── pyproject.toml
+├── README.md
+├── system
+│  ├── __init__.py
+│  ├── base_manager.py
+│  ├── logic.py
+│  ├── play
+│  │  ├── __init__.py
+│  │  ├── play_manager.py
+│  │  └── ui
+│  │     ├── __init__.py
+│  │     ├── hud.py
+│  │     └── play_button.py
+│  └── start
+│     ├── __init__.py
+│     ├── start_manager.py
+│     └── ui
+│        ├── __init__.py
+│        └── start_button.py
+└── uv.lock
+```
