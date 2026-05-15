@@ -15,15 +15,15 @@
 
 1. **必要なライブラリをインストールします:**
 
-    ```bash
-    pip install pygame
-    ```
+   ```bash
+   pip install pygame
+   ```
 
 2. **ゲームを実行します:**
 
-    ```bash
-    python main.py 
-    ```
+   ```bash
+   python main.py
+   ```
 
 ## 操作方法
 

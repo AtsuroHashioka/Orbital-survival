@@ -6,10 +6,12 @@ import math
 from .base import CelestialBody
 from config import *
 
+
 class Planet(CelestialBody):
     """
     惑星を表すクラス
     """
+
     # --- クラス定数 ---
     ORBIT_RADIUS = PLANET_ORBIT_RADIUS
     MAX_TRAJECTORY_LENGTH = 2 * math.pi / 6
@@ -29,18 +31,18 @@ class Planet(CelestialBody):
             acceleration=self.ACCELERATION,
             friction=self.FRICTION,
             angle=angle,
-            speed=0.0
+            speed=0.0,
         )
-        self.radius = radius # 公転の半径
+        self.radius = radius  # 公転の半径
         self.color = EARTH_BLUE
-        
+
         # 表示用に、フレームごとの実際の角加速度を保持する
         self.actual_acceleration = 0.0
-        
+
         # 最初の座標を計算し、矩形の位置を合わせる
         self.x = self.center_pos[0] + self.radius * math.cos(self.angle)
         self.y = self.center_pos[1] + self.radius * math.sin(self.angle)
-        
+
     def update(self, direction):
         """
         惑星の状態を毎フレーム更新する
@@ -63,16 +65,16 @@ class Planet(CelestialBody):
         self.y = self.center_pos[1] + self.radius * math.sin(self.angle)
 
     def draw(self, screen):
-        '''
+        """
         惑星本体と軌道の描画
         :param screen: 描画対象のPygameスクリーンオブジェクト
-        '''
+        """
         # --- 軌道の描画 ---
         self._draw_trajectory(screen)
 
         # --- 惑星本体の描画 ---
         self._draw_planet(screen)
-    
+
     def _draw_planet(self, screen):
         """
         惑星本体を画面に描画する
@@ -83,7 +85,9 @@ class Planet(CelestialBody):
         # 惑星本体（黒い円）を描画
         pygame.draw.circle(screen, BLACK, (int(self.x), int(self.y)), self.size)
         # 惑星の縁（青色の枠）を描画
-        pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.size, CIRCLE_WIDTH)  # 幅2の枠
+        pygame.draw.circle(
+            screen, self.color, (int(self.x), int(self.y)), self.size, CIRCLE_WIDTH
+        )  # 幅2の枠
 
     def _draw_trajectory(self, screen):
         """
@@ -91,9 +95,16 @@ class Planet(CelestialBody):
         :param screen: 描画対象のPygameスクリーンオブジェクト
         """
         for n in range(self.TRAJECTORY_NUM):
-            tjy_angle = self.angle - self.MAX_TRAJECTORY_LENGTH * (self.speed / self.MAX_SPEED) * (n / self.TRAJECTORY_NUM)
+            tjy_angle = self.angle - self.MAX_TRAJECTORY_LENGTH * (
+                self.speed / self.MAX_SPEED
+            ) * (n / self.TRAJECTORY_NUM)
             tjy_x = self.center_pos[0] + self.radius * math.cos(tjy_angle)
             tjy_y = self.center_pos[1] + self.radius * math.sin(tjy_angle)
             tjy_size = self.size * (1 - n / self.TRAJECTORY_NUM)
-            tjy_color = tuple(int(c * math.sqrt(1 - n / self.TRAJECTORY_NUM)) for c in self.color)
-            pygame.draw.circle(screen, tjy_color, (int(tjy_x), int(tjy_y)), int(tjy_size))
+            tjy_color = tuple(
+                int(c * math.sqrt(1 - n / self.TRAJECTORY_NUM)) for c in self.color
+            )
+            pygame.draw.circle(
+                screen, tjy_color, (int(tjy_x), int(tjy_y)), int(tjy_size)
+            )
+

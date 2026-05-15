@@ -8,6 +8,7 @@ from .base import CelestialBody
 from .beam import Beam
 from config import *
 
+
 class Star(CelestialBody):
     """
     恒星を表すクラス
@@ -24,10 +25,9 @@ class Star(CelestialBody):
             size=size,
             acceleration=self.ACCELERATION,
             friction=self.FRICTION,
-
             # 初期角度と速度はランダムに設定
             angle=random.uniform(0, 2 * math.pi),
-            speed=random.uniform(-0.005, 0.005)
+            speed=random.uniform(-0.005, 0.005),
         )
         self.color = SUN_ORANGE
         self.arc_range = math.pi * 60 / 360  # 黒い円弧の描画範囲
@@ -36,19 +36,19 @@ class Star(CelestialBody):
         self.random_timer = 0
         self.random_direction = 0
         self.beam_timer = 0
-        
+
         # 砲台の発光を制御するためのタイマー
         self.cannon_flash_timers = [0, 0, 0]
-        self.beams = [] # 発射した光線を管理するリスト
-        self.cannon_initial_radius = self.size # 砲台の初期半径を保存
-        self.cannon_radii = [self.cannon_initial_radius] * 3 # 各砲台の半径
+        self.beams = []  # 発射した光線を管理するリスト
+        self.cannon_initial_radius = self.size  # 砲台の初期半径を保存
+        self.cannon_radii = [self.cannon_initial_radius] * 3  # 各砲台の半径
 
     def update(self):
         """
         ランダムに恒星の自転（位相）を更新し、光線を発射する。
         """
         # 光線の更新と削除
-        for beam in self.beams[:]: # コピーをループして、ループ中に安全に削除
+        for beam in self.beams[:]:  # コピーをループして、ループ中に安全に削除
             beam.update()
             if not beam.is_alive():
                 self.beams.remove(beam)
@@ -60,16 +60,24 @@ class Star(CelestialBody):
         if self.random_timer >= FPS // 8:
             self.random_timer = 0
             # 加速度0を選ぶ確率を20%、左右をそれぞれ40%に設定
-            self.random_direction = random.choices([-1, 0, 1], weights=[40, 20, 40], k=1)[0]
+            self.random_direction = random.choices(
+                [-1, 0, 1], weights=[40, 20, 40], k=1
+            )[0]
 
         # 光線を発射
         if self.beam_timer >= FPS // 8:
             self.beam_timer = 0
             # 3つの砲台から光線を発射
-            for i in range(3):  
-                if random.random() < 0.20: # 20%の確率で発射
+            for i in range(3):
+                if random.random() < 0.20:  # 20%の確率で発射
                     cannon_angle = self.angle + (2 * math.pi / 3) * i
-                    beam = Beam(self.center_pos, cannon_angle, self.arc_range, self.size, int(self.size // 4))
+                    beam = Beam(
+                        self.center_pos,
+                        cannon_angle,
+                        self.arc_range,
+                        self.size,
+                        int(self.size // 4),
+                    )
                     self.beams.append(beam)
                     # 発射エフェクト：対応する砲台の半径を一時的に小さくする
                     self.cannon_radii[i] = self.cannon_initial_radius * 0.75
@@ -83,7 +91,7 @@ class Star(CelestialBody):
                     self.cannon_radii[i] = self.cannon_initial_radius
 
         self.update_angle_and_speed(self.random_direction)
-        
+
     def draw(self, screen):
         """
         恒星、砲台、光線を画面に描画する
@@ -96,16 +104,26 @@ class Star(CelestialBody):
         # 恒星本体（黒い円）を描画
         pygame.draw.circle(screen, BLACK, self.center_pos, self.size / 2)
         # 恒星の縁（オレンジ色の枠）を描画
-        pygame.draw.circle(screen, self.color, self.center_pos, self.size / 2, CIRCLE_WIDTH)  # 幅2の枠
+        pygame.draw.circle(
+            screen, self.color, self.center_pos, self.size / 2, CIRCLE_WIDTH
+        )  # 幅2の枠
 
         # 次に、angle付近に砲台を描画します
         for i in range(3):  # 3つの砲台を描画
-            arc_radius = self.cannon_radii[i] # 各砲台の半径を使用
+            arc_radius = self.cannon_radii[i]  # 各砲台の半径を使用
             # 位相を3等分
             cannon_angle = self.angle + (2 * math.pi / 3) * i
             cannon_angle %= 2 * math.pi  # 角度を0〜2πの範囲に収める
-            # 円弧の開始角度と終了角度を計算  
+            # 円弧の開始角度と終了角度を計算
             start_angle = cannon_angle - self.arc_range / 2
             end_angle = cannon_angle + self.arc_range / 2
-            rect = pygame.Rect(self.center_pos[0] - arc_radius, self.center_pos[1] - arc_radius, arc_radius * 2, arc_radius * 2)
-            pygame.draw.arc(screen, self.color, rect, start_angle, end_angle, int(self.size // 4))
+            rect = pygame.Rect(
+                self.center_pos[0] - arc_radius,
+                self.center_pos[1] - arc_radius,
+                arc_radius * 2,
+                arc_radius * 2,
+            )
+            pygame.draw.arc(
+                screen, self.color, rect, start_angle, end_angle, int(self.size // 4)
+            )
+

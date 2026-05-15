@@ -7,6 +7,7 @@ from entities.planet import Planet
 from entities.star import Star
 from entities.beam import BeamCorpse
 
+
 class Logic:
     """
     ゲームのロジックを管理するクラス
@@ -15,7 +16,7 @@ class Logic:
     def __init__(self):
         """
         Systemオブジェクトの初期化
-        
+
         :param center_pos: 惑星と恒星の中心位置 (x, y)
         :param planet_size: 惑星のサイズ(半径)
         :param planet_initial_angle: 惑星の初期角度
@@ -24,7 +25,9 @@ class Logic:
         """
         # --- オブジェクトの生成 ---
         # Planetオブジェクトを生成
-        self.planet = Planet(CENTER_POS, PLANET_SIZE, PLANET_INITIAL_ANGLE, PLANET_ORBIT_RADIUS)
+        self.planet = Planet(
+            CENTER_POS, PLANET_SIZE, PLANET_INITIAL_ANGLE, PLANET_ORBIT_RADIUS
+        )
         # Starオブジェクトを生成
         self.star = Star(CENTER_POS, STAR_SIZE)
 
@@ -35,7 +38,7 @@ class Logic:
         # 光線の死体リスト
         self.corpses = []
         # スコアとキルカウント
-        self.score = 0 
+        self.score = 0
         self.kill_count = 0
 
     def update(self):
@@ -79,28 +82,39 @@ class Logic:
             angle_margin = math.pi
 
         # ビームと惑星の衝突を判定し、衝突したビームを死体リストに追加し、生き残ったビームはリストに保持
-        surviving_beams = [] # 生き残ったビームのリスト
+        surviving_beams = []  # 生き残ったビームのリスト
         for beam in self.star.beams:
-            beam_front_radius = beam.radius + beam.width + self.planet.size 
+            beam_front_radius = beam.radius + beam.width + self.planet.size
             beam_back_radius = max(0, beam.radius - beam.width - self.planet.size)
 
             collided = False
             if beam_back_radius < planet_orbit_radius < beam_front_radius:
-                angle_diff = (planet_angle + beam.angle + math.pi) % (2 * math.pi) - math.pi
+                angle_diff = (planet_angle + beam.angle + math.pi) % (
+                    2 * math.pi
+                ) - math.pi
 
                 if abs(angle_diff) < beam.arc_range / 2 + angle_margin:
                     self.kill_count += 1
                     self.score -= 200
                     # 衝突したビームの死体を追加
-                    self.corpses.append(BeamCorpse(beam.center_pos, beam.angle, beam.arc_range, beam.radius, beam.width))
+                    self.corpses.append(
+                        BeamCorpse(
+                            beam.center_pos,
+                            beam.angle,
+                            beam.arc_range,
+                            beam.radius,
+                            beam.width,
+                        )
+                    )
                     collided = True
             elif beam.radius > planet_orbit_radius and not beam.dodged:
                 self.score += 10
                 beam.dodged = True
-            
+
             if not collided:
                 # 生き残ったビームとしてリストに追加
                 surviving_beams.append(beam)
 
         # 恒星のビームリストを更新(生き残ったビームのみを保持)
         self.star.beams = surviving_beams
+

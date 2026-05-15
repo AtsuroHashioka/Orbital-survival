@@ -1,12 +1,13 @@
-# game.py 
+# game.py
 
 import pygame
-import sys       
-import random  
+import sys
+import random
 
 from config import *
 from system.play.play_manager import Play_Manager
 from system.start.start_manager import Start_Manager
+
 
 class Game:
     """
@@ -23,15 +24,17 @@ class Game:
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
         pygame.display.set_caption("ORBITAL SURVIVAL")
-        
-        self.is_running = True # 人間がプレイする際のループ制御用
-        self.game_mode = 'start'  # ゲームモードの初期設定
-        self.manager = Start_Manager(self.screen, self.clock)  # ゲームモードマネージャー
+
+        self.is_running = True  # 人間がプレイする際のループ制御用
+        self.game_mode = "start"  # ゲームモードの初期設定
+        self.manager = Start_Manager(
+            self.screen, self.clock
+        )  # ゲームモードマネージャー
 
         # --- 背景の星を生成 ---
         self.background_stars = self._create_stars(NUM_BACKGROUND_STARS)
 
-    #--- 背景の星を生成 ---
+    # --- 背景の星を生成 ---
     def _create_stars(self, num_stars):
         """背景用の星を生成する"""
         stars = []
@@ -43,10 +46,10 @@ class Game:
             # 明るさをランダムに設定
             brightness = random.randint(50, 150)
             color = (brightness, brightness, brightness)
-            stars.append({'pos': (x, y), 'radius': radius, 'color': color})
+            stars.append({"pos": (x, y), "radius": radius, "color": color})
         return stars
 
-    #--- イベント処理 ---
+    # --- イベント処理 ---
     def _handle_events(self):
         """
         キーボードやマウスのイベントを処理する
@@ -58,10 +61,12 @@ class Game:
                 self.is_running = False
 
             # ゲームモードごとのイベント処理
-            if self.game_mode == 'start':
+            if self.game_mode == "start":
                 if self.manager.start_button.is_pressed(event):
-                    self.game_mode = 'play'
-                    self.manager = Play_Manager(self.screen, self.clock)  # Play_Managerのインスタンスを作成
+                    self.game_mode = "play"
+                    self.manager = Play_Manager(
+                        self.screen, self.clock
+                    )  # Play_Managerのインスタンスを作成
             # 暫定対応
             # elif self.game_mode == 'play':
             #     if self.manager.start_button.is_pressed(event):
@@ -70,23 +75,24 @@ class Game:
             # else:
             #     pass # 暫定対応
 
-    #--- ゲーム状態の更新 ---
+    # --- ゲーム状態の更新 ---
     def _update(self):
         """
         ゲーム内の各オブジェクトの状態を更新する
         """
         self.manager.update()
 
-
-    #--- 描画 ---
+    # --- 描画 ---
     def _draw(self):
         """
         画面に各オブジェクトを描画する
         """
         self.screen.fill(BLACK)
-        
+
         for star_data in self.background_stars:
-            pygame.draw.circle(self.screen, star_data['color'], star_data['pos'], star_data['radius'])
+            pygame.draw.circle(
+                self.screen, star_data["color"], star_data["pos"], star_data["radius"]
+            )
 
         self.manager.draw()
 

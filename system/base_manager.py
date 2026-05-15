@@ -1,5 +1,6 @@
 # system/base_manager.py
 
+
 class Base_Manager:
     """
     ゲームモードの基底クラス
@@ -27,3 +28,4 @@ class Base_Manager:
         画面に各オブジェクトを描画する
         """
         pass
+

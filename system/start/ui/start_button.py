@@ -4,13 +4,14 @@ import pygame
 
 from config import *
 
+
 class Start_Button:
     """
     スペースキーの入力を感知するクラス
     """
 
     def __init__(self):
-        pass # 初期化は特に必要なし
+        pass  # 初期化は特に必要なし
 
     def is_pressed(self, event):
         """

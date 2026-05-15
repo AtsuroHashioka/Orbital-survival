@@ -4,10 +4,12 @@ import pygame
 import math
 from config import *
 
+
 class Play_Button:
     """
     プレイ画面の円形の矢印ボタンを表すクラス
     """
+
     def __init__(self, center_x, center_y, radius, direction):
         """
         Buttonオブジェクトの初期化
@@ -34,27 +36,27 @@ class Play_Button:
         """
         # ボタンの直径サイズの透明なSurfaceを作成
         surface = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
-        
+
         # 背景の円を描画
         pygame.draw.circle(surface, bg_color, (self.radius, self.radius), self.radius)
         # ボタンの縁に白い円の枠を追加
         pygame.draw.circle(surface, WHITE, (self.radius, self.radius), self.radius, 2)
-        
+
         # 矢印のポリゴン（三角形）の頂点を計算
         # ボタンの半径を基準に、相対的な座標を計算する
         arrow_size = self.radius * 0.4
-        if self.direction == 'left':
+        if self.direction == "left":
             p1 = (self.radius - arrow_size, self.radius)
             p2 = (self.radius + arrow_size, self.radius - arrow_size)
             p3 = (self.radius + arrow_size, self.radius + arrow_size)
-        else: # 'right'
+        else:  # 'right'
             p1 = (self.radius + arrow_size, self.radius)
             p2 = (self.radius - arrow_size, self.radius - arrow_size)
             p3 = (self.radius - arrow_size, self.radius + arrow_size)
 
         # アンチエイリアスを有効にして、滑らかな矢印を描画
         pygame.draw.polygon(surface, icon_color, [p1, p2, p3])
-        
+
         return surface
 
     def draw(self, screen, is_active=False):
@@ -75,4 +77,7 @@ class Play_Button:
         :return: クリックされていればTrue, そうでなければFalse
         """
         # 中心点とマウス位置の距離を計算し、半径と比較
-        return math.hypot(pos[0] - self.center[0], pos[1] - self.center[1]) <= self.radius
+        return (
+            math.hypot(pos[0] - self.center[0], pos[1] - self.center[1]) <= self.radius
+        )
+
