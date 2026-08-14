@@ -87,9 +87,10 @@ class Planet(CelestialBody):
         """
         for n in range(self.TRAJECTORY_NUM):
             progress = n / self.TRAJECTORY_NUM
-            tjy_angle = self.angle - self.MAX_TRAJECTORY_LENGTH * (
-                self.speed / self.MAX_SPEED
-            ) * progress
+            tjy_angle = (
+                self.angle
+                - self.MAX_TRAJECTORY_LENGTH * (self.speed / self.MAX_SPEED) * progress
+            )
             tjy_x, tjy_y = self._orbit_point(tjy_angle)
             tjy_size = self.size * (1 - progress)
             # sqrt rather than a linear ramp: perceived brightness falls off

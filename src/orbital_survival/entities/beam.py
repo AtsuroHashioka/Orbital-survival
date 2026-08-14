@@ -7,9 +7,9 @@ from orbital_survival.config import (
     BEAM_SPEED,
     FPS,
     PLANET_ORBIT_RADIUS,
-    Position,
     RED,
     WHITE,
+    Position,
     scale_color,
 )
 from orbital_survival.entities.base import BaseArc

@@ -22,6 +22,7 @@ packages = ["src/orbital_survival"]
 dev = [
     "mypy>=2.3.0",
     "pytest>=9.1.1",
+    "ruff>=0.16.3",
 ]
 
 [tool.pytest.ini_options]
@@ -31,3 +32,30 @@ testpaths = ["tests"]
 python_version = "3.12"
 strict = true
 files = ["src", "tests"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+# ANN is omitted: mypy's disallow_untyped_defs already reports missing
+# annotations, and two tools flagging the same line is pure noise.
+# D is omitted: it would require a docstring on every public function,
+# which contradicts deleting the ones that only restated the signature.
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "C4",  # flake8-comprehensions
+    "RUF", # ruff-specific
+]
+
+[tool.ruff.lint.isort]
+# Without this, a "X as Y" member forces its own import statement, splitting
+# one config import into three.
+combine-as-imports = true

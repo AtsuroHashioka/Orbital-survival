@@ -7,8 +7,8 @@ import pygame
 
 from orbital_survival.config import (
     ACCELERATION as CFG_ACCELERATION,
-    Color,
     FRICTION as CFG_FRICTION,
+    Color,
     Position,
 )
 

@@ -5,7 +5,7 @@ from typing import Literal
 
 import pygame
 
-from orbital_survival.config import BLACK, Color, Position, WHITE
+from orbital_survival.config import BLACK, WHITE, Color, Position
 
 type Direction = Literal["left", "right"]
 

@@ -7,12 +7,12 @@ import pygame
 
 from orbital_survival.config import (
     BLACK,
-    Color,
     FPS,
     NUM_BACKGROUND_STARS,
-    Position,
     SCREEN_HEIGHT,
     SCREEN_WIDTH,
+    Color,
+    Position,
 )
 from orbital_survival.scenes.base import GameMode, Scene
 from orbital_survival.scenes.play import PlayScene

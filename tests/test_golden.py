@@ -12,14 +12,16 @@ import pytest
 
 from tests._trace import as_rows, build_trace, load_trace
 
+type Frames = list[dict[str, Any]]
+
 
 @pytest.fixture(scope="module")
-def recorded() -> list[dict[str, Any]]:
+def recorded() -> Frames:
     return as_rows(load_trace())
 
 
 @pytest.fixture(scope="module")
-def replayed() -> list[dict[str, Any]]:
+def replayed() -> Frames:
     return as_rows(build_trace())
 
 
@@ -33,17 +35,17 @@ def test_trace_metadata_matches() -> None:
     assert stored["fields"] == fresh["fields"]
 
 
-def test_frame_count(recorded: list[dict[str, Any]], replayed: list[dict[str, Any]]) -> None:
+def test_frame_count(recorded: Frames, replayed: Frames) -> None:
     assert len(replayed) == len(recorded)
 
 
-def test_every_frame_matches(recorded: list[dict[str, Any]], replayed: list[dict[str, Any]]) -> None:
+def test_every_frame_matches(recorded: Frames, replayed: Frames) -> None:
     """Compare frame by frame so a failure names the frame that diverged."""
     for index, (expected, actual) in enumerate(zip(recorded, replayed, strict=True)):
         assert actual == expected, f"simulation diverged at frame {index}"
 
 
-def test_trace_exercises_both_collision_outcomes(recorded: list[dict[str, Any]]) -> None:
+def test_trace_exercises_both_collision_outcomes(recorded: Frames) -> None:
     """Guard the guard: a trace with no hits or no dodges would prove little."""
     kills = recorded[-1]["kill_count"]
     dodges = (recorded[-1]["score"] + 200 * kills) // 10

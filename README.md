@@ -35,6 +35,21 @@ uv sync
 uv run orbital-survival
 ```
 
+## Development
+
+```bash
+uv run pytest              # tests
+uv run mypy                # type check (strict)
+uv run ruff check --fix    # lint
+uv run ruff format         # format
+```
+
+`tests/data/golden_trace.json` records 600 frames of simulation from fixed
+random seeds. `test_golden.py` replays them and asserts the numbers still
+match, which is what lets the game be refactored without changing how it
+plays. Regenerate it with `uv run python -m tests._trace` — but only when a
+change to the rules is intended, since that is exactly what it guards.
+
 ## Controls
 
 - Left arrow key: accelerate left

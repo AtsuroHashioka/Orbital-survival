@@ -103,7 +103,8 @@ def test_beam_short_of_the_orbit_scores_nothing(logic: Logic) -> None:
 
 def test_collision_survives_angle_wraparound(logic: Logic) -> None:
     """A beam angle given beyond 2pi must still line up with the planet."""
-    logic.star.beams = [make_beam(ALIGNED_ANGLE + 4 * math.pi, logic.planet.orbit_radius)]
+    beam = make_beam(ALIGNED_ANGLE + 4 * math.pi, logic.planet.orbit_radius)
+    logic.star.beams = [beam]
 
     logic._check_collisions()
 
