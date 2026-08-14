@@ -1,12 +1,23 @@
-import pygame
+"""The hostile star at the center: it spins at random and fires beams."""
+
 import math
 import random
 
+import pygame
+
+from orbital_survival.config import BLACK, CIRCLE_WIDTH, FPS, SUN_ORANGE, Position
 from orbital_survival.entities.base import CelestialBody
 from orbital_survival.entities.beam import Beam
-from orbital_survival.config import BLACK, CIRCLE_WIDTH, FPS, SUN_ORANGE
 
 CANNON_COUNT = 3  # Cannons spaced evenly around the star
+CANNON_ARC_RANGE = math.pi * 60 / 360  # Angular width of a cannon and its beam
+DECISION_INTERVAL = FPS // 8  # Frames between direction rolls and firing rolls
+FIRE_CHANCE = 0.20  # Per-cannon chance to fire on a firing roll
+# Weights for turning left, coasting, and turning right.
+DIRECTION_WEIGHTS = [40, 20, 40]
+INITIAL_SPEED_RANGE = 0.005
+RECOIL_SCALE = 0.75  # Cannon shrinks to this fraction of its radius when firing
+RECOIL_RECOVERY = 0.5  # Radius regained per frame afterwards
 
 
 class Star(CelestialBody):
@@ -14,12 +25,7 @@ class Star(CelestialBody):
     Class representing the star.
     """
 
-    def __init__(self, center_pos, size):
-        """
-        Initialize a Star object.
-        :param center_pos: Star center position (x, y)
-        :param size: Star radius
-        """
+    def __init__(self, center_pos: Position, size: float) -> None:
         super().__init__(
             center_pos=center_pos,
             size=size,
@@ -27,26 +33,27 @@ class Star(CelestialBody):
             friction=self.FRICTION,
             # Set initial angle and speed randomly
             angle=random.uniform(0, 2 * math.pi),
-            speed=random.uniform(-0.005, 0.005),
+            speed=random.uniform(-INITIAL_SPEED_RANGE, INITIAL_SPEED_RANGE),
         )
         self.color = SUN_ORANGE
-        self.arc_range = math.pi * 60 / 360  # Draw range of black arc
+        self.arc_range = CANNON_ARC_RANGE
 
         # Timer and current direction for random control
         self.random_timer = 0
         self.random_direction = 0
         self.beam_timer = 0
 
-        self.beams = []  # List of emitted beams
-        self.cannon_initial_radius = self.size  # Initial cannon radius
-        # Radius of each cannon
+        self.beams: list[Beam] = []
+        self.cannon_initial_radius = self.size
         self.cannon_radii = [self.cannon_initial_radius] * CANNON_COUNT
 
-    def update(self):
-        """
-        Randomly update star rotation (phase) and emit beams.
-        """
-        # Update and remove beams
+    @property
+    def beam_width(self) -> int:
+        """Stroke width shared by the cannons and the beams they fire."""
+        return int(self.size // 4)
+
+    def update(self) -> None:
+        """Advance the beams, re-roll the star's spin, and maybe fire."""
         for beam in self.beams:
             beam.update()
         self.beams = [beam for beam in self.beams if beam.is_alive()]
@@ -54,65 +61,53 @@ class Star(CelestialBody):
         self.random_timer += 1
         self.beam_timer += 1
 
-        # Randomly change acceleration direction
-        if self.random_timer >= FPS // 8:
+        if self.random_timer >= DECISION_INTERVAL:
             self.random_timer = 0
-            # Set probabilities: 20% for 0, 40% each for left/right
             self.random_direction = random.choices(
-                [-1, 0, 1], weights=[40, 20, 40], k=1
+                [-1, 0, 1], weights=DIRECTION_WEIGHTS, k=1
             )[0]
 
-        # Emit beams
-        if self.beam_timer >= FPS // 8:
+        if self.beam_timer >= DECISION_INTERVAL:
             self.beam_timer = 0
-            # Emit beams from the three cannons
             for i in range(CANNON_COUNT):
-                if random.random() < 0.20:  # 20% chance to fire
-                    cannon_angle = self.angle + (2 * math.pi / CANNON_COUNT) * i
-                    beam = Beam(
-                        self.center_pos,
-                        cannon_angle,
-                        self.arc_range,
-                        self.size,
-                        int(self.size // 4),
+                if random.random() < FIRE_CHANCE:
+                    self.beams.append(
+                        Beam(
+                            self.center_pos,
+                            self._cannon_angle(i),
+                            self.arc_range,
+                            self.size,
+                            self.beam_width,
+                        )
                     )
-                    self.beams.append(beam)
-                    # Firing effect: temporarily shrink corresponding cannon radius
-                    self.cannon_radii[i] = self.cannon_initial_radius * 0.75
+                    # Recoil: the cannon shrinks, then grows back below.
+                    self.cannon_radii[i] = self.cannon_initial_radius * RECOIL_SCALE
 
-        # Gradually restore each cannon radius to initial size
         for i in range(CANNON_COUNT):
             if self.cannon_radii[i] < self.cannon_initial_radius:
-                self.cannon_radii[i] += 0.5  # Radius recovery speed
-                # Clamp so it does not exceed initial radius
-                if self.cannon_radii[i] > self.cannon_initial_radius:
-                    self.cannon_radii[i] = self.cannon_initial_radius
+                self.cannon_radii[i] = min(
+                    self.cannon_radii[i] + RECOIL_RECOVERY, self.cannon_initial_radius
+                )
 
         self.update_angle_and_speed(self.random_direction)
 
-    def draw(self, screen):
-        """
-        Draw the star, cannons, and beams on the screen.
-        :param screen: Target Pygame screen object
-        """
-        # Draw emitted beams first so they appear behind the star
+    def _cannon_angle(self, index: int) -> float:
+        """Angle of the given cannon, spaced evenly around the current phase."""
+        return self.angle + (2 * math.pi / CANNON_COUNT) * index
+
+    def draw(self, screen: pygame.Surface) -> None:
+        """Draw the beams, then the star body, then the cannons on top."""
         for beam in self.beams:
             beam.draw(screen)
 
-        # Draw star body (black circle)
         pygame.draw.circle(screen, BLACK, self.center_pos, self.size / 2)
-        # Draw star outline (orange border)
         pygame.draw.circle(
             screen, self.color, self.center_pos, self.size / 2, CIRCLE_WIDTH
-        )  # Border width: 2
+        )
 
-        # Draw cannons around the current angle
         for i in range(CANNON_COUNT):
-            arc_radius = self.cannon_radii[i]  # Use radius for each cannon
-            # Split phase into equal parts
-            cannon_angle = self.angle + (2 * math.pi / CANNON_COUNT) * i
-            cannon_angle %= 2 * math.pi  # Keep angle in the range [0, 2π)
-            # Compute start and end angles of arc
+            arc_radius = self.cannon_radii[i]
+            cannon_angle = self._cannon_angle(i) % (2 * math.pi)
             start_angle = cannon_angle - self.arc_range / 2
             end_angle = cannon_angle + self.arc_range / 2
             rect = pygame.Rect(
@@ -122,5 +117,5 @@ class Star(CelestialBody):
                 arc_radius * 2,
             )
             pygame.draw.arc(
-                screen, self.color, rect, start_angle, end_angle, int(self.size // 4)
+                screen, self.color, rect, start_angle, end_angle, self.beam_width
             )

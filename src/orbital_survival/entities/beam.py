@@ -1,12 +1,18 @@
-from orbital_survival.entities.base import BaseArc
+"""Beams fired by the star, and the red marks left where one struck."""
+
+import pygame
+
 from orbital_survival.config import (
     BEAM_MAX_RADIUS,
     BEAM_SPEED,
     FPS,
     PLANET_ORBIT_RADIUS,
+    Position,
     RED,
     WHITE,
+    scale_color,
 )
+from orbital_survival.entities.base import BaseArc
 
 
 class Beam(BaseArc):
@@ -14,53 +20,40 @@ class Beam(BaseArc):
     Class representing a beam emitted from the star.
     """
 
-    # -- Class constants ---
-    SPEED = BEAM_SPEED
-    MAX_RADIUS = BEAM_MAX_RADIUS
+    SPEED: int = BEAM_SPEED
+    MAX_RADIUS: int = BEAM_MAX_RADIUS
 
-    def __init__(self, center_pos, angle, arc_range, radius, width):
-        """
-        Initialize a beam object.
-
-        :param center_pos: Beam center position (x, y)
-        :param angle: Beam center angle
-        :param arc_range: Beam angle range
-        :param radius: Initial beam radius (from star surface)
-        :param width: Beam line width
-        """
-
+    def __init__(
+        self,
+        center_pos: Position,
+        angle: float,
+        arc_range: float,
+        radius: float,
+        width: int,
+    ) -> None:
         super().__init__(
             center_pos=center_pos,
             angle=angle,
+            # Beams start at the star's surface, not at its center.
+            radius=radius,
             arc_range=arc_range,
-            radius=radius,  # Initial radius at emission (from star surface)
             width=width,
             color=WHITE,
         )
-        self.dodged = False  # Flag to track whether this beam was dodged
+        self.dodged = False  # Whether this beam has already scored a dodge
 
-    def update(self):
-        """
-        Update beam state.
-        """
-        self.radius += self.SPEED  # Increase radius at beam expansion speed
+    def update(self) -> None:
+        """Expand the beam outward by one frame."""
+        self.radius += self.SPEED
 
-    def is_alive(self):
-        """
-        Determine whether the beam is still active.
-        """
-        return self.radius < self.MAX_RADIUS  # Check if max radius is not reached
+    def is_alive(self) -> bool:
+        """A beam lives until it expands past the edge of the play area."""
+        return self.radius < self.MAX_RADIUS
 
-    def draw(self, screen):
-        """
-        Draw the beam on the screen.
-        :param screen: Target Pygame screen object
-        """
-
-        # Fade out once radius exceeds the planet orbit radius (225)
+    def draw(self, screen: pygame.Surface) -> None:
+        """Draw the beam, fading it out over the stretch past the orbit."""
         fade_distance = self.MAX_RADIUS - PLANET_ORBIT_RADIUS
 
-        # Compute fade progress (0.0: start, 1.0: complete)
         fade_progress = (
             max(0, (self.radius - PLANET_ORBIT_RADIUS)) / fade_distance
             if fade_distance > 0
@@ -68,10 +61,11 @@ class Beam(BaseArc):
         )
         life_ratio = 1.0 - min(fade_progress, 1.0)
 
-        current_color = tuple(int(c * life_ratio) for c in self.color)
+        # Near the star the beam is thinner than its nominal width, so it
+        # cannot be drawn wider than its own radius.
         draw_width = min(self.width, int(self.radius))
 
-        self.draw_arc(screen, current_color, draw_width)
+        self.draw_arc(screen, scale_color(self.color, life_ratio), draw_width)
 
 
 class BeamCorpse(BaseArc):
@@ -79,18 +73,16 @@ class BeamCorpse(BaseArc):
     Class representing a beam "corpse" shown after collision.
     """
 
-    DURATION = FPS // 4  # Display duration (0.25 seconds)
+    DURATION: int = FPS // 4  # Display duration (0.25 seconds)
 
-    def __init__(self, center_pos, angle, arc_range, radius, width):
-        """
-        Initialize a destroyed beam object.
-
-        :param center_pos: Beam center position (x, y)
-        :param angle: Beam center angle
-        :param arc_range: Beam angle range
-        :param radius: Beam radius at collision time
-        :param width: Beam line width
-        """
+    def __init__(
+        self,
+        center_pos: Position,
+        angle: float,
+        arc_range: float,
+        radius: float,
+        width: int,
+    ) -> None:
         super().__init__(
             center_pos=center_pos,
             angle=angle,
@@ -99,26 +91,18 @@ class BeamCorpse(BaseArc):
             width=width,
             color=RED,
         )
-        self.life = self.DURATION  # Remaining display time
+        self.life = self.DURATION  # Frames of display time remaining
 
-    def update(self):
-        """
-        Update corpse state (fade-out).
-        """
+    def update(self) -> None:
+        """Count down one frame of display time."""
         self.life -= 1
 
-    def is_alive(self):
-        """
-        Determine whether the corpse should still be displayed.
-        """
+    def is_alive(self) -> bool:
+        """Return whether the corpse still has display time left."""
         return self.life > 0
 
-    def draw(self, screen):
-        """
-        Draw the corpse (fade-out).
-        :param screen: Target Pygame screen object
-        """
+    def draw(self, screen: pygame.Surface) -> None:
+        """Draw the corpse, dimming it as its remaining life runs out."""
         if self.is_alive():
             life_ratio = self.life / self.DURATION
-            current_color = tuple(int(c * life_ratio) for c in self.color)
-            self.draw_arc(screen, current_color, self.width)
+            self.draw_arc(screen, scale_color(self.color, life_ratio), self.width)

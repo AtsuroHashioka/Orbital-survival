@@ -98,7 +98,8 @@ def as_rows(trace: dict[str, Any]) -> list[dict[str, Any]]:
 def load_trace() -> dict[str, Any]:
     """Read the recorded trace from disk."""
     with TRACE_PATH.open(encoding="utf-8") as handle:
-        return json.load(handle)
+        loaded: dict[str, Any] = json.load(handle)
+    return loaded
 
 
 def save_trace(trace: dict[str, Any]) -> None:

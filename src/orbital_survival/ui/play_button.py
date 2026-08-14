@@ -1,6 +1,16 @@
-import pygame
+"""The circular left/right arrow buttons shown during play."""
+
 import math
-from orbital_survival.config import BLACK, WHITE
+from typing import Literal
+
+import pygame
+
+from orbital_survival.config import BLACK, Color, Position, WHITE
+
+type Direction = Literal["left", "right"]
+
+BORDER_WIDTH = 2
+ARROW_SCALE = 0.4  # Arrow half-size as a fraction of the button radius
 
 
 class PlayButton:
@@ -8,73 +18,64 @@ class PlayButton:
     Class representing circular arrow buttons on the play screen.
     """
 
-    def __init__(self, center_x, center_y, radius, direction):
-        """
-        Initialize a button object.
-        :param center_x: Button center x-coordinate
-        :param center_y: Button center y-coordinate
-        :param radius: Button radius
-        :param direction: Arrow direction ('left' or 'right')
-        """
+    def __init__(
+        self,
+        center_x: float,
+        center_y: float,
+        radius: int,
+        direction: Direction,
+    ) -> None:
         self.center = (center_x, center_y)
         self.radius = radius
         self.direction = direction
 
-        # Pre-render button images for better performance.
-        # Two states: normal (black background, white icon) and active (inverted).
+        # Pre-rendered rather than redrawn every frame. Two states: normal
+        # (black on white outline) and active (inverted).
         self.image_normal = self._create_surface(icon_color=WHITE, bg_color=BLACK)
         self.image_active = self._create_surface(icon_color=BLACK, bg_color=WHITE)
         self.rect = self.image_normal.get_rect(center=self.center)
 
-    def _create_surface(self, icon_color, bg_color):
-        """
-        Internal method to create a button surface with specified icon colors.
-        :param icon_color: Arrow icon color
-        :return: Rendered Pygame Surface object
-        """
-        # Create a transparent surface sized to button diameter
+    def _create_surface(self, icon_color: Color, bg_color: Color) -> pygame.Surface:
+        """Render one button state onto a transparent surface."""
         surface = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
 
-        # Draw background circle
         pygame.draw.circle(surface, bg_color, (self.radius, self.radius), self.radius)
-        # Add a white circular border
-        pygame.draw.circle(surface, WHITE, (self.radius, self.radius), self.radius, 2)
+        pygame.draw.circle(
+            surface, WHITE, (self.radius, self.radius), self.radius, BORDER_WIDTH
+        )
 
-        # Compute vertices for the arrow triangle
-        # Coordinates are relative to button radius
-        arrow_size = self.radius * 0.4
+        # Arrow vertices, relative to the button's own center.
+        arrow_size = self.radius * ARROW_SCALE
         if self.direction == "left":
-            p1 = (self.radius - arrow_size, self.radius)
-            p2 = (self.radius + arrow_size, self.radius - arrow_size)
-            p3 = (self.radius + arrow_size, self.radius + arrow_size)
-        else:  # 'right'
-            p1 = (self.radius + arrow_size, self.radius)
-            p2 = (self.radius - arrow_size, self.radius - arrow_size)
-            p3 = (self.radius - arrow_size, self.radius + arrow_size)
+            tip = (self.radius - arrow_size, self.radius)
+            back_x = self.radius + arrow_size
+        else:
+            tip = (self.radius + arrow_size, self.radius)
+            back_x = self.radius - arrow_size
 
-        # Draw smooth arrow polygon
-        pygame.draw.polygon(surface, icon_color, [p1, p2, p3])
+        pygame.draw.polygon(
+            surface,
+            icon_color,
+            [
+                tip,
+                (back_x, self.radius - arrow_size),
+                (back_x, self.radius + arrow_size),
+            ],
+        )
 
         return surface
 
-    def draw(self, screen, is_active=False):
-        """
-        Draw the button and switch style based on active state.
-        :param screen: Target Pygame screen object
-        :param is_active: Whether the button is currently pressed
-        """
-        if is_active:
-            screen.blit(self.image_active, self.rect)
-        else:
-            screen.blit(self.image_normal, self.rect)
+    def draw(self, screen: pygame.Surface, is_active: bool = False) -> None:
+        """Blit the pressed or unpressed image depending on `is_active`."""
+        image = self.image_active if is_active else self.image_normal
+        screen.blit(image, self.rect)
 
-    def is_clicked(self, pos):
+    def is_clicked(self, pos: Position) -> bool:
+        """Return whether a point falls inside the button's circle.
+
+        The circle is tested directly rather than via self.rect, which is the
+        square bounding box and would accept the corners.
         """
-        Check whether the given position is inside the circular button area.
-        :param pos: Mouse click coordinates (x, y)
-        :return: True if clicked, otherwise False
-        """
-        # Compare distance from center against radius
         return (
             math.hypot(pos[0] - self.center[0], pos[1] - self.center[1]) <= self.radius
         )

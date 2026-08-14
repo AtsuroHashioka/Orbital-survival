@@ -1,49 +1,65 @@
+"""Tuning constants for rendering, physics and gameplay.
+
+Also home to the Color type and the one operation performed on colors, so
+the palette and the code that manipulates it stay together.
+"""
+
 import math
+from typing import Final
+
+type Color = tuple[int, int, int]
+type Position = tuple[float, float]
 
 # --- Rendering-related parameters ---
 
 # Screen size
-SCREEN_SIZE = 400
-SCREEN_WIDTH = SCREEN_SIZE * 3
-SCREEN_HEIGHT = SCREEN_SIZE * 2
+SCREEN_SIZE: Final[int] = 400
+SCREEN_WIDTH: Final[int] = SCREEN_SIZE * 3
+SCREEN_HEIGHT: Final[int] = SCREEN_SIZE * 2
 # Color definitions (RGB)
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-GRAY = (200, 200, 200)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-EARTH_BLUE = (51, 153, 204)
-SUN_ORANGE = (252, 130, 0)
+WHITE: Final[Color] = (255, 255, 255)
+BLACK: Final[Color] = (0, 0, 0)
+GRAY: Final[Color] = (200, 200, 200)
+RED: Final[Color] = (255, 0, 0)
+GREEN: Final[Color] = (0, 255, 0)
+EARTH_BLUE: Final[Color] = (51, 153, 204)
+SUN_ORANGE: Final[Color] = (252, 130, 0)
 # Frame rate
-FPS = 120
-NUM_BACKGROUND_STARS = 250
-BUTTON_RADIUS = 30
+FPS: Final[int] = 120
+NUM_BACKGROUND_STARS: Final[int] = 250
+BUTTON_RADIUS: Final[int] = 30
 # Monospaced font candidates, tried in order. A constant digit width keeps
 # the HUD from jittering as values change.
-FONT_NAMES = ["consolas", "dejavusansmono", "couriernew", "monospace"]
+FONT_NAMES: Final[list[str]] = ["consolas", "dejavusansmono", "couriernew", "monospace"]
 
 # --- Game-system-related parameters ---
 
-CENTER_POS = (
-    SCREEN_WIDTH // 2,
-    SCREEN_HEIGHT // 2 - 50,
-)  # Center coordinates of celestial bodies; shifted slightly upward to leave room for buttons
-CIRCLE_WIDTH = 2  # Circle line width for celestial bodies
+# Center of the celestial bodies, nudged up to leave room for the buttons.
+CENTER_POS: Final[Position] = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50)
+CIRCLE_WIDTH: Final[int] = 2  # Circle line width for celestial bodies
 
-ACCELERATION = 0.0010  # Angular acceleration
-FRICTION = 0.99  # Deceleration ratio
+ACCELERATION: Final[float] = 0.0010  # Angular acceleration
+FRICTION: Final[float] = 0.99  # Deceleration ratio
 
 # Beam-related parameters
-BEAM_SPEED = 2  # Beam expansion speed
-BEAM_MAX_RADIUS = SCREEN_SIZE  # Maximum beam radius (used for alive check)
+BEAM_SPEED: Final[int] = 2  # Beam expansion speed
+BEAM_MAX_RADIUS: Final[int] = SCREEN_SIZE  # Maximum beam radius (alive check)
 
 # Planet-related parameters
-PLANET_SIZE = 12  # Planet radius
-PLANET_ORBIT_RADIUS = 225  # Planet orbital radius
-PLANET_INITIAL_ANGLE = math.pi / 2  # Initial planet angle (90 degrees, downward)
+PLANET_SIZE: Final[int] = 12  # Planet radius
+PLANET_ORBIT_RADIUS: Final[int] = 225  # Planet orbital radius
+PLANET_INITIAL_ANGLE: Final[float] = math.pi / 2  # 90 degrees, downward
 
 # Star-related parameters
-STAR_SIZE = PLANET_SIZE * 3  # Star radius
+STAR_SIZE: Final[int] = PLANET_SIZE * 3  # Star radius
 
 # --- Machine-learning-related parameters ---
-MAX_BEAMS = 39  # Max beams in state: (num cannons) x (BEAM_MAX_RADIUS - STAR_SIZE) / BEAM_SPEED / (fire interval in frames)
+# Max beams in state:
+# (num cannons) x (BEAM_MAX_RADIUS - STAR_SIZE) / BEAM_SPEED / (fire interval)
+MAX_BEAMS: Final[int] = 39
+
+
+def scale_color(color: Color, ratio: float) -> Color:
+    """Scale a color toward black, for fade-out effects."""
+    red, green, blue = color
+    return int(red * ratio), int(green * ratio), int(blue * ratio)

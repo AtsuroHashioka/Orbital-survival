@@ -15,27 +15,27 @@ from orbital_survival.config import (
 )
 from orbital_survival.entities.base import CelestialBody
 from orbital_survival.entities.beam import Beam, BeamCorpse
+from orbital_survival.entities.planet import Planet
+from orbital_survival.entities.star import Star
 
 
 @pytest.fixture
-def planet():
-    from orbital_survival.entities.planet import Planet
-
+def planet() -> Planet:
     return Planet(CENTER_POS, PLANET_SIZE, 0.0, PLANET_ORBIT_RADIUS)
 
 
-def test_planet_starts_at_rest(planet) -> None:
+def test_planet_starts_at_rest(planet: Planet) -> None:
     assert planet.speed == 0.0
     assert planet.angle == 0.0
 
 
-def test_acceleration_is_damped_by_friction(planet) -> None:
+def test_acceleration_is_damped_by_friction(planet: Planet) -> None:
     planet.update(1)
 
     assert planet.speed == pytest.approx(ACCELERATION * FRICTION)
 
 
-def test_reported_acceleration_is_the_speed_delta(planet) -> None:
+def test_reported_acceleration_is_the_speed_delta(planet: Planet) -> None:
     planet.update(1)
     first = planet.speed
 
@@ -44,7 +44,7 @@ def test_reported_acceleration_is_the_speed_delta(planet) -> None:
     assert planet.actual_acceleration == pytest.approx(planet.speed - first)
 
 
-def test_idle_input_decays_speed(planet) -> None:
+def test_idle_input_decays_speed(planet: Planet) -> None:
     planet.update(1)
     moving = planet.speed
 
@@ -54,14 +54,14 @@ def test_idle_input_decays_speed(planet) -> None:
     assert planet.speed < moving
 
 
-def test_speed_converges_to_max_speed(planet) -> None:
+def test_speed_converges_to_max_speed(planet: Planet) -> None:
     for _ in range(5000):
         planet.update(1)
 
     assert planet.speed == pytest.approx(CelestialBody.MAX_SPEED)
 
 
-def test_angle_stays_normalized(planet) -> None:
+def test_angle_stays_normalized(planet: Planet) -> None:
     planet.angle = 2 * math.pi - 1e-9
 
     for _ in range(200):
@@ -69,7 +69,7 @@ def test_angle_stays_normalized(planet) -> None:
         assert 0.0 <= planet.angle < 2 * math.pi
 
 
-def test_position_follows_the_orbit(planet) -> None:
+def test_position_follows_the_orbit(planet: Planet) -> None:
     planet.update(1)
 
     assert planet.x == pytest.approx(
@@ -80,7 +80,7 @@ def test_position_follows_the_orbit(planet) -> None:
     )
 
 
-def test_planet_stays_on_its_orbit(planet) -> None:
+def test_planet_stays_on_its_orbit(planet: Planet) -> None:
     for _ in range(500):
         planet.update(1)
 
@@ -123,8 +123,6 @@ def test_corpse_counts_down_and_expires() -> None:
 
 
 def test_star_normalizes_its_initial_angle() -> None:
-    from orbital_survival.entities.star import Star
-
     star = Star(CENTER_POS, 36)
 
     assert 0.0 <= star.angle < 2 * math.pi
