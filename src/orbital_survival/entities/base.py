@@ -1,9 +1,7 @@
-# entities/base.py
-
 import math
 import pygame
 
-from config import ACCELERATION as CFG_ACCELERATION, FRICTION as CFG_FRICTION
+from orbital_survival.config import ACCELERATION as CFG_ACCELERATION, FRICTION as CFG_FRICTION
 
 # --- Base classes ---
 

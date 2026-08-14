@@ -10,9 +10,9 @@ import random
 
 import pytest
 
-from config import CENTER_POS, PLANET_INITIAL_ANGLE, STAR_SIZE
-from entities.beam import Beam
-from system.logic import Logic
+from orbital_survival.config import CENTER_POS, PLANET_INITIAL_ANGLE, STAR_SIZE
+from orbital_survival.entities.beam import Beam
+from orbital_survival.logic import Logic
 
 BEAM_ARC_RANGE = math.pi * 60 / 360
 BEAM_WIDTH = int(STAR_SIZE // 4)

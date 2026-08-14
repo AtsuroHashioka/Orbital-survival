@@ -32,7 +32,7 @@ uv sync
 ## Run
 
 ```bash
-uv run python main.py
+uv run orbital-survival
 ```
 
 ## Controls
@@ -50,39 +50,39 @@ uv run python main.py
 
 ```text
 .
-├── .gitignore
-├── .python-version
-├── __init__.py
-├── config.py
-├── entities
-│  ├── __init__.py
-│  ├── base.py
-│  ├── beam.py
-│  ├── planet.py
-│  └── star.py
-├── game.py
 ├── img
 │  ├── Play.png
 │  └── Start.png
-├── main.py
+├── src
+│  └── orbital_survival
+│     ├── __init__.py
+│     ├── __main__.py          # console-script entry point
+│     ├── config.py            # tuning constants
+│     ├── game.py              # window, main loop, scene switching
+│     ├── logic.py             # physics, collisions and scoring
+│     ├── entities
+│     │  ├── base.py           # CelestialBody / BaseArc
+│     │  ├── beam.py           # Beam, BeamCorpse
+│     │  ├── planet.py
+│     │  └── star.py
+│     ├── scenes
+│     │  ├── base.py
+│     │  ├── play.py
+│     │  └── start.py
+│     └── ui
+│        ├── hud.py
+│        ├── play_button.py
+│        └── start_button.py
+├── tests
+│  ├── _trace.py               # golden-master trace builder
+│  ├── conftest.py
+│  ├── data
+│  │  └── golden_trace.json
+│  ├── test_entities.py
+│  ├── test_golden.py
+│  ├── test_logic.py
+│  └── test_smoke.py
 ├── pyproject.toml
 ├── README.md
-├── system
-│  ├── __init__.py
-│  ├── base_manager.py
-│  ├── logic.py
-│  ├── play
-│  │  ├── __init__.py
-│  │  ├── play_manager.py
-│  │  └── ui
-│  │     ├── __init__.py
-│  │     ├── hud.py
-│  │     └── play_button.py
-│  └── start
-│     ├── __init__.py
-│     ├── start_manager.py
-│     └── ui
-│        ├── __init__.py
-│        └── start_button.py
 └── uv.lock
 ```

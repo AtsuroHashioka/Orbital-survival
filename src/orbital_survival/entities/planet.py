@@ -1,10 +1,8 @@
-# entities/planet.py
-
 import pygame
 import math
 
-from .base import CelestialBody
-from config import BLACK, CIRCLE_WIDTH, EARTH_BLUE, PLANET_ORBIT_RADIUS
+from orbital_survival.entities.base import CelestialBody
+from orbital_survival.config import BLACK, CIRCLE_WIDTH, EARTH_BLUE, PLANET_ORBIT_RADIUS
 
 
 class Planet(CelestialBody):

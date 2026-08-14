@@ -1,17 +1,15 @@
-# system/logic.py
-
 import math
 
-from config import (
+from orbital_survival.config import (
     CENTER_POS,
     PLANET_INITIAL_ANGLE,
     PLANET_ORBIT_RADIUS,
     PLANET_SIZE,
     STAR_SIZE,
 )
-from entities.planet import Planet
-from entities.star import Star
-from entities.beam import BeamCorpse
+from orbital_survival.entities.planet import Planet
+from orbital_survival.entities.star import Star
+from orbital_survival.entities.beam import BeamCorpse
 
 
 class Logic:

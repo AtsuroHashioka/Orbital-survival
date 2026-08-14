@@ -1,12 +1,10 @@
-# game.py
-
 import pygame
 import sys
 import random
 
-from config import BLACK, FPS, NUM_BACKGROUND_STARS, SCREEN_HEIGHT, SCREEN_WIDTH
-from system.play.play_manager import Play_Manager
-from system.start.start_manager import Start_Manager
+from orbital_survival.config import BLACK, FPS, NUM_BACKGROUND_STARS, SCREEN_HEIGHT, SCREEN_WIDTH
+from orbital_survival.scenes.play import Play_Manager
+from orbital_survival.scenes.start import Start_Manager
 
 
 class Game:

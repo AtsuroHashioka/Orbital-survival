@@ -1,4 +1,3 @@
-# config.py
 import math
 
 # --- Rendering-related parameters ---

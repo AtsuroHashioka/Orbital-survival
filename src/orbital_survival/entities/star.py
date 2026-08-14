@@ -1,12 +1,10 @@
-# entities/star.py
-
 import pygame
 import math
 import random
 
-from .base import CelestialBody
-from .beam import Beam
-from config import BLACK, CIRCLE_WIDTH, FPS, SUN_ORANGE
+from orbital_survival.entities.base import CelestialBody
+from orbital_survival.entities.beam import Beam
+from orbital_survival.config import BLACK, CIRCLE_WIDTH, FPS, SUN_ORANGE
 
 
 class Star(CelestialBody):

@@ -1,5 +1,3 @@
-# system/base_manager.py
-
 
 class Base_Manager:
     """

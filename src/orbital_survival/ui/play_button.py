@@ -1,8 +1,6 @@
-# system/play/ui/play_button.py
-
 import pygame
 import math
-from config import BLACK, WHITE
+from orbital_survival.config import BLACK, WHITE
 
 
 class Play_Button:

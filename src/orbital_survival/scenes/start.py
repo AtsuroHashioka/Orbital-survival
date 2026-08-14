@@ -1,10 +1,8 @@
-# system/start/start_manager.py
-
 import pygame
 
-from config import GREEN, SCREEN_HEIGHT, SCREEN_WIDTH, WHITE
-from system.base_manager import Base_Manager
-from system.start.ui.start_button import Start_Button
+from orbital_survival.config import GREEN, SCREEN_HEIGHT, SCREEN_WIDTH, WHITE
+from orbital_survival.scenes.base import Base_Manager
+from orbital_survival.ui.start_button import Start_Button
 
 
 class Start_Manager(Base_Manager):

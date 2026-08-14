@@ -18,7 +18,7 @@ import random
 from pathlib import Path
 from typing import Any
 
-from system.logic import Logic
+from orbital_survival.logic import Logic
 
 TRACE_PATH = Path(__file__).parent / "data" / "golden_trace.json"
 

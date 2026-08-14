@@ -4,7 +4,7 @@ import math
 
 import pytest
 
-from config import (
+from orbital_survival.config import (
     ACCELERATION,
     BEAM_MAX_RADIUS,
     BEAM_SPEED,
@@ -13,13 +13,13 @@ from config import (
     PLANET_ORBIT_RADIUS,
     PLANET_SIZE,
 )
-from entities.base import CelestialBody
-from entities.beam import Beam, BeamCorpse
+from orbital_survival.entities.base import CelestialBody
+from orbital_survival.entities.beam import Beam, BeamCorpse
 
 
 @pytest.fixture
 def planet():
-    from entities.planet import Planet
+    from orbital_survival.entities.planet import Planet
 
     return Planet(CENTER_POS, PLANET_SIZE, 0.0, PLANET_ORBIT_RADIUS)
 
@@ -123,7 +123,7 @@ def test_corpse_counts_down_and_expires() -> None:
 
 
 def test_star_normalizes_its_initial_angle() -> None:
-    from entities.star import Star
+    from orbital_survival.entities.star import Star
 
     star = Star(CENTER_POS, 36)
 

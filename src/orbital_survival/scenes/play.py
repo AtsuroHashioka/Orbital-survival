@@ -1,12 +1,10 @@
-# system/play/play_manager.py
-
 import pygame
 
-from config import BUTTON_RADIUS, SCREEN_HEIGHT, SCREEN_WIDTH
-from system.logic import Logic
-from system.base_manager import Base_Manager
-from system.play.ui.play_button import Play_Button
-from system.play.ui.hud import HUD
+from orbital_survival.config import BUTTON_RADIUS, SCREEN_HEIGHT, SCREEN_WIDTH
+from orbital_survival.logic import Logic
+from orbital_survival.scenes.base import Base_Manager
+from orbital_survival.ui.play_button import Play_Button
+from orbital_survival.ui.hud import HUD
 
 
 class Play_Manager(Base_Manager):

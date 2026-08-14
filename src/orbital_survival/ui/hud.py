@@ -1,7 +1,5 @@
-# system/play/ui/hud.py
-
 import pygame
-from config import GREEN, SCREEN_WIDTH, WHITE
+from orbital_survival.config import GREEN, SCREEN_WIDTH, WHITE
 
 
 class HUD:

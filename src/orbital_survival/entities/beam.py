@@ -1,7 +1,5 @@
-# entities/beam.py
-
-from .base import BaseArc
-from config import (
+from orbital_survival.entities.base import BaseArc
+from orbital_survival.config import (
     BEAM_MAX_RADIUS,
     BEAM_SPEED,
     FPS,
