@@ -1,5 +1,5 @@
 import pygame
-from orbital_survival.config import GREEN, SCREEN_WIDTH, WHITE
+from orbital_survival.config import FONT_NAMES, GREEN, SCREEN_WIDTH, WHITE
 
 
 class HUD:
@@ -12,10 +12,7 @@ class HUD:
         Initialize a HUD object.
         :param font_size: Font size for displayed text
         """
-        # Automatically select an available monospaced font.
-        # This keeps digit width constant and avoids visual jitter.
-        font_names = ["consolas", "dejavusansmono", "couriernew", "monospace"]
-        self.font = pygame.font.SysFont(font_names, font_size)
+        self.font = pygame.font.SysFont(FONT_NAMES, font_size)
         self.color = WHITE
 
     def draw(

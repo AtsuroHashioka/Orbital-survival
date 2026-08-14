@@ -18,6 +18,9 @@ SUN_ORANGE = (252, 130, 0)
 FPS = 120
 NUM_BACKGROUND_STARS = 250
 BUTTON_RADIUS = 30
+# Monospaced font candidates, tried in order. A constant digit width keeps
+# the HUD from jittering as values change.
+FONT_NAMES = ["consolas", "dejavusansmono", "couriernew", "monospace"]
 
 # --- Game-system-related parameters ---
 

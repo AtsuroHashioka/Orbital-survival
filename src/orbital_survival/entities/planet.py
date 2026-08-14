@@ -2,7 +2,7 @@ import pygame
 import math
 
 from orbital_survival.entities.base import CelestialBody
-from orbital_survival.config import BLACK, CIRCLE_WIDTH, EARTH_BLUE, PLANET_ORBIT_RADIUS
+from orbital_survival.config import BLACK, CIRCLE_WIDTH, EARTH_BLUE
 
 
 class Planet(CelestialBody):
@@ -11,17 +11,16 @@ class Planet(CelestialBody):
     """
 
     # --- Class constants ---
-    ORBIT_RADIUS = PLANET_ORBIT_RADIUS
     MAX_TRAJECTORY_LENGTH = 2 * math.pi / 6
     TRAJECTORY_NUM = 60
 
-    def __init__(self, center_pos, size, angle, radius):
+    def __init__(self, center_pos, size, angle, orbit_radius):
         """
         Initialize a Planet object.
         :param center_pos: Orbital center position (x, y)
         :param size: Planet radius
         :param angle: Initial planet angle (radians)
-        :param radius: Orbital radius
+        :param orbit_radius: Orbital radius
         """
         super().__init__(
             center_pos=center_pos,
@@ -31,15 +30,15 @@ class Planet(CelestialBody):
             angle=angle,
             speed=0.0,
         )
-        self.radius = radius  # Orbital radius
+        self.orbit_radius = orbit_radius
         self.color = EARTH_BLUE
 
         # Keep per-frame actual angular acceleration for display
         self.actual_acceleration = 0.0
 
         # Compute initial coordinates
-        self.x = self.center_pos[0] + self.radius * math.cos(self.angle)
-        self.y = self.center_pos[1] + self.radius * math.sin(self.angle)
+        self.x = self.center_pos[0] + self.orbit_radius * math.cos(self.angle)
+        self.y = self.center_pos[1] + self.orbit_radius * math.sin(self.angle)
 
     def update(self, direction):
         """
@@ -59,8 +58,8 @@ class Planet(CelestialBody):
         self.actual_acceleration = self.speed - speed_before_update
 
         # Compute (x, y) coordinates
-        self.x = self.center_pos[0] + self.radius * math.cos(self.angle)
-        self.y = self.center_pos[1] + self.radius * math.sin(self.angle)
+        self.x = self.center_pos[0] + self.orbit_radius * math.cos(self.angle)
+        self.y = self.center_pos[1] + self.orbit_radius * math.sin(self.angle)
 
     def draw(self, screen):
         """
@@ -96,8 +95,8 @@ class Planet(CelestialBody):
             tjy_angle = self.angle - self.MAX_TRAJECTORY_LENGTH * (
                 self.speed / self.MAX_SPEED
             ) * (n / self.TRAJECTORY_NUM)
-            tjy_x = self.center_pos[0] + self.radius * math.cos(tjy_angle)
-            tjy_y = self.center_pos[1] + self.radius * math.sin(tjy_angle)
+            tjy_x = self.center_pos[0] + self.orbit_radius * math.cos(tjy_angle)
+            tjy_y = self.center_pos[1] + self.orbit_radius * math.sin(tjy_angle)
             tjy_size = self.size * (1 - n / self.TRAJECTORY_NUM)
             tjy_color = tuple(
                 int(c * math.sqrt(1 - n / self.TRAJECTORY_NUM)) for c in self.color

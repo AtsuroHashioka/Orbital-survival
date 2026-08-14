@@ -1,7 +1,12 @@
 import math
+from abc import ABC, abstractmethod
+
 import pygame
 
-from orbital_survival.config import ACCELERATION as CFG_ACCELERATION, FRICTION as CFG_FRICTION
+from orbital_survival.config import (
+    ACCELERATION as CFG_ACCELERATION,
+    FRICTION as CFG_FRICTION,
+)
 
 # --- Base classes ---
 
@@ -10,8 +15,8 @@ class CelestialBody:
     """Base class for rotating celestial bodies such as planets and stars."""
 
     # --- Class constants ---
-    ACCELERATION = float(CFG_ACCELERATION)
-    FRICTION = float(CFG_FRICTION)
+    ACCELERATION = CFG_ACCELERATION
+    FRICTION = CFG_FRICTION
     MAX_SPEED = ACCELERATION * FRICTION / (1 - FRICTION)
 
     def __init__(self, center_pos, size, acceleration, friction, angle, speed):
@@ -43,7 +48,7 @@ class CelestialBody:
         self.angle %= 2 * math.pi  # Keep angle in the range [0, 2π)
 
 
-class BaseArc:
+class BaseArc(ABC):
     """Base class for arc-drawing objects (beams and beam corpses)."""
 
     def __init__(self, center_pos, angle, arc_range, radius, width, color):
@@ -64,13 +69,13 @@ class BaseArc:
         self.width = width  # Arc line width
         self.color = color  # Arc color
 
+    @abstractmethod
     def update(self):
         """Update state. Implemented in subclasses."""
-        raise NotImplementedError
 
+    @abstractmethod
     def is_alive(self):
         """Return whether object is alive. Implemented in subclasses."""
-        raise NotImplementedError
 
     def draw_arc(self, screen, color, draw_width):
         """

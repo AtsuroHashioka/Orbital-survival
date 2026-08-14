@@ -2,28 +2,33 @@ import pygame
 
 from orbital_survival.config import BUTTON_RADIUS, SCREEN_HEIGHT, SCREEN_WIDTH
 from orbital_survival.logic import Logic
-from orbital_survival.scenes.base import Base_Manager
-from orbital_survival.ui.play_button import Play_Button
+from orbital_survival.scenes.base import Scene
+from orbital_survival.ui.play_button import PlayButton
 from orbital_survival.ui.hud import HUD
 
 
-class Play_Manager(Base_Manager):
+class PlayScene(Scene):
     """
     Subclass that manages PLAY mode.
     """
 
-    def __init__(self, screen, clock):
+    def __init__(self, screen):
         """
-        Initialize a PlayManager object.
+        Initialize a PlayScene object.
 
         :param screen: Pygame screen object
-        :param clock: Pygame clock object
         """
 
-        super().__init__(screen, clock)
+        super().__init__(screen)
 
         # Initialize game state
         self._initialize_state()
+
+    def handle_event(self, event):
+        """
+        Play mode never switches away on its own.
+        """
+        return None
 
     def _initialize_state(self):
         """Initialize game state."""
@@ -34,10 +39,10 @@ class Play_Manager(Base_Manager):
         self.logic = Logic()
 
         # Place circular buttons at lower left/right center
-        self.left_button = Play_Button(
+        self.left_button = PlayButton(
             SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT - 80, BUTTON_RADIUS, "left"
         )
-        self.right_button = Play_Button(
+        self.right_button = PlayButton(
             SCREEN_WIDTH / 2 + 100, SCREEN_HEIGHT - 80, BUTTON_RADIUS, "right"
         )
         # Create HUD object

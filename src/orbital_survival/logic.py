@@ -76,7 +76,7 @@ class Logic:
     def _check_collisions(self):
         """Check collisions between the planet and beams."""
         planet_angle = self.planet.angle
-        planet_orbit_radius = self.planet.radius
+        planet_orbit_radius = self.planet.orbit_radius
         planet_size = self.planet.size
 
         # Calculate angular margin for collision checks

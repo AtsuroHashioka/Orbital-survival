@@ -3,7 +3,7 @@ import math
 from orbital_survival.config import BLACK, WHITE
 
 
-class Play_Button:
+class PlayButton:
     """
     Class representing circular arrow buttons on the play screen.
     """

@@ -6,6 +6,8 @@ from orbital_survival.entities.base import CelestialBody
 from orbital_survival.entities.beam import Beam
 from orbital_survival.config import BLACK, CIRCLE_WIDTH, FPS, SUN_ORANGE
 
+CANNON_COUNT = 3  # Cannons spaced evenly around the star
+
 
 class Star(CelestialBody):
     """
@@ -35,21 +37,19 @@ class Star(CelestialBody):
         self.random_direction = 0
         self.beam_timer = 0
 
-        # Timers and state for cannon flash effects
-        self.cannon_flash_timers = [0, 0, 0]
         self.beams = []  # List of emitted beams
         self.cannon_initial_radius = self.size  # Initial cannon radius
-        self.cannon_radii = [self.cannon_initial_radius] * 3  # Radius of each cannon
+        # Radius of each cannon
+        self.cannon_radii = [self.cannon_initial_radius] * CANNON_COUNT
 
     def update(self):
         """
         Randomly update star rotation (phase) and emit beams.
         """
         # Update and remove beams
-        for beam in self.beams[:]:  # Iterate over a copy to remove safely during loop
+        for beam in self.beams:
             beam.update()
-            if not beam.is_alive():
-                self.beams.remove(beam)
+        self.beams = [beam for beam in self.beams if beam.is_alive()]
 
         self.random_timer += 1
         self.beam_timer += 1
@@ -66,9 +66,9 @@ class Star(CelestialBody):
         if self.beam_timer >= FPS // 8:
             self.beam_timer = 0
             # Emit beams from the three cannons
-            for i in range(3):
+            for i in range(CANNON_COUNT):
                 if random.random() < 0.20:  # 20% chance to fire
-                    cannon_angle = self.angle + (2 * math.pi / 3) * i
+                    cannon_angle = self.angle + (2 * math.pi / CANNON_COUNT) * i
                     beam = Beam(
                         self.center_pos,
                         cannon_angle,
@@ -81,7 +81,7 @@ class Star(CelestialBody):
                     self.cannon_radii[i] = self.cannon_initial_radius * 0.75
 
         # Gradually restore each cannon radius to initial size
-        for i in range(3):
+        for i in range(CANNON_COUNT):
             if self.cannon_radii[i] < self.cannon_initial_radius:
                 self.cannon_radii[i] += 0.5  # Radius recovery speed
                 # Clamp so it does not exceed initial radius
@@ -107,10 +107,10 @@ class Star(CelestialBody):
         )  # Border width: 2
 
         # Draw cannons around the current angle
-        for i in range(3):  # Draw three cannons
+        for i in range(CANNON_COUNT):
             arc_radius = self.cannon_radii[i]  # Use radius for each cannon
-            # Split phase into three equal parts
-            cannon_angle = self.angle + (2 * math.pi / 3) * i
+            # Split phase into equal parts
+            cannon_angle = self.angle + (2 * math.pi / CANNON_COUNT) * i
             cannon_angle %= 2 * math.pi  # Keep angle in the range [0, 2π)
             # Compute start and end angles of arc
             start_angle = cannon_angle - self.arc_range / 2

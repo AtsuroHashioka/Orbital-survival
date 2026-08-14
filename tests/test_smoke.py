@@ -19,9 +19,9 @@ def game():
 
 
 def test_game_starts_on_the_start_screen(game) -> None:
-    from orbital_survival.scenes.start import Start_Manager
+    from orbital_survival.scenes.start import StartScene
 
-    assert isinstance(game.manager, Start_Manager)
+    assert isinstance(game.scene, StartScene)
     assert game.is_running is True
 
 
@@ -42,12 +42,12 @@ def test_start_screen_renders(game) -> None:
 
 
 def test_space_switches_to_play(game) -> None:
-    from orbital_survival.scenes.play import Play_Manager
+    from orbital_survival.scenes.play import PlayScene
 
     pygame.event.post(pygame.event.Event(pygame.KEYDOWN, key=pygame.K_SPACE))
     game._handle_events()
 
-    assert isinstance(game.manager, Play_Manager)
+    assert isinstance(game.scene, PlayScene)
 
 
 def test_play_screen_renders(game) -> None:

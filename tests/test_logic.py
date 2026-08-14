@@ -42,7 +42,7 @@ def make_beam(angle: float, radius: float) -> Beam:
 
 
 def test_beam_crossing_the_planet_scores_a_hit(logic: Logic) -> None:
-    logic.star.beams = [make_beam(ALIGNED_ANGLE, logic.planet.radius)]
+    logic.star.beams = [make_beam(ALIGNED_ANGLE, logic.planet.orbit_radius)]
 
     logic._check_collisions()
 
@@ -51,7 +51,7 @@ def test_beam_crossing_the_planet_scores_a_hit(logic: Logic) -> None:
 
 
 def test_hit_beam_is_removed_and_leaves_a_corpse(logic: Logic) -> None:
-    logic.star.beams = [make_beam(ALIGNED_ANGLE, logic.planet.radius)]
+    logic.star.beams = [make_beam(ALIGNED_ANGLE, logic.planet.orbit_radius)]
 
     logic._check_collisions()
 
@@ -61,7 +61,7 @@ def test_hit_beam_is_removed_and_leaves_a_corpse(logic: Logic) -> None:
 
 
 def test_beam_at_the_planet_radius_but_elsewhere_misses(logic: Logic) -> None:
-    beam = make_beam(OPPOSITE_ANGLE, logic.planet.radius)
+    beam = make_beam(OPPOSITE_ANGLE, logic.planet.orbit_radius)
     logic.star.beams = [beam]
 
     logic._check_collisions()
@@ -72,7 +72,7 @@ def test_beam_at_the_planet_radius_but_elsewhere_misses(logic: Logic) -> None:
 
 
 def test_beam_past_the_orbit_scores_a_dodge(logic: Logic) -> None:
-    beam = make_beam(OPPOSITE_ANGLE, logic.planet.radius + 25)
+    beam = make_beam(OPPOSITE_ANGLE, logic.planet.orbit_radius + 25)
     logic.star.beams = [beam]
 
     logic._check_collisions()
@@ -83,7 +83,7 @@ def test_beam_past_the_orbit_scores_a_dodge(logic: Logic) -> None:
 
 
 def test_a_dodge_is_only_scored_once(logic: Logic) -> None:
-    logic.star.beams = [make_beam(OPPOSITE_ANGLE, logic.planet.radius + 25)]
+    logic.star.beams = [make_beam(OPPOSITE_ANGLE, logic.planet.orbit_radius + 25)]
 
     logic._check_collisions()
     logic._check_collisions()
@@ -103,7 +103,7 @@ def test_beam_short_of_the_orbit_scores_nothing(logic: Logic) -> None:
 
 def test_collision_survives_angle_wraparound(logic: Logic) -> None:
     """A beam angle given beyond 2pi must still line up with the planet."""
-    logic.star.beams = [make_beam(ALIGNED_ANGLE + 4 * math.pi, logic.planet.radius)]
+    logic.star.beams = [make_beam(ALIGNED_ANGLE + 4 * math.pi, logic.planet.orbit_radius)]
 
     logic._check_collisions()
 
@@ -111,7 +111,7 @@ def test_collision_survives_angle_wraparound(logic: Logic) -> None:
 
 
 def test_corpses_expire(logic: Logic) -> None:
-    logic.star.beams = [make_beam(ALIGNED_ANGLE, logic.planet.radius)]
+    logic.star.beams = [make_beam(ALIGNED_ANGLE, logic.planet.orbit_radius)]
     logic._check_collisions()
     corpse = logic.corpses[0]
 

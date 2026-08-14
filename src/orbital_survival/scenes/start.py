@@ -1,38 +1,42 @@
 import pygame
 
-from orbital_survival.config import GREEN, SCREEN_HEIGHT, SCREEN_WIDTH, WHITE
-from orbital_survival.scenes.base import Base_Manager
-from orbital_survival.ui.start_button import Start_Button
+from orbital_survival.config import FONT_NAMES, GREEN, SCREEN_HEIGHT, SCREEN_WIDTH, WHITE
+from orbital_survival.scenes.base import GameMode, Scene
 
 
-class Start_Manager(Base_Manager):
+def is_start_pressed(event):
+    """Return True when the event is a SPACE key press."""
+    return event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE
+
+
+class StartScene(Scene):
     """
     Subclass that manages the start screen.
     """
 
-    def __init__(self, screen, clock):
+    def __init__(self, screen):
         """
-        Initialize a StartManager object.
+        Initialize a StartScene object.
 
         :param screen: Screen object
-        :param clock: Clock object
         """
 
-        super().__init__(screen, clock)
-
-        # Create space-key handler
-        self.start_button = Start_Button()
+        super().__init__(screen)
 
         # Prepare fonts
-        font_names = ["consolas", "dejavusansmono", "couriernew", "monospace"]
-        self.title_font = pygame.font.SysFont(font_names, 74)
-        self.prompt_font = pygame.font.SysFont(font_names, 36)
+        self.title_font = pygame.font.SysFont(FONT_NAMES, 74)
+        self.prompt_font = pygame.font.SysFont(FONT_NAMES, 36)
+
+    def handle_event(self, event):
+        """
+        Switch to PLAY when SPACE is pressed.
+        """
+        return GameMode.PLAY if is_start_pressed(event) else None
 
     def update(self):
         """
         Update the state of in-game objects.
         """
-        pass
 
     def draw(self):
         """
