@@ -5,6 +5,7 @@ import pygame
 from orbital_survival.config import BUTTON_RADIUS, SCREEN_HEIGHT, SCREEN_WIDTH
 from orbital_survival.logic import Logic
 from orbital_survival.scenes.base import GameMode, GameResult, Scene, SceneRequest
+from orbital_survival.ui.graph import GraphRecorder, GraphWindow
 from orbital_survival.ui.hud import HUD, HUDState
 from orbital_survival.ui.play_button import PlayButton
 
@@ -17,13 +18,14 @@ class PlayScene(Scene):
     Subclass that manages PLAY mode.
     """
 
-    def __init__(self, screen: pygame.Surface) -> None:
+    def __init__(self, screen: pygame.Surface, graph: GraphWindow | None) -> None:
         super().__init__(screen)
 
+        self.graph = graph
         self._initialize_state()
 
     def _initialize_state(self) -> None:
-        """Build a fresh round: logic, buttons and HUD."""
+        """Build a fresh round: logic, buttons, HUD and telemetry."""
         self.start_time = pygame.time.get_ticks()
 
         self.logic = Logic()
@@ -42,6 +44,12 @@ class PlayScene(Scene):
             "right",
         )
         self.hud = HUD()
+
+        # A round gets its own recorder, which is what makes the graph start
+        # empty again without anything having to clear it.
+        self.recorder = GraphRecorder()
+        if self.graph is not None:
+            self.graph.attach(self.recorder)
 
     def handle_event(self, event: pygame.event.Event) -> SceneRequest | None:
         """Play mode never switches away in response to an event."""
@@ -69,6 +77,12 @@ class PlayScene(Scene):
         )
 
         self.logic.update()
+
+        self.recorder.record(
+            speed=self.logic.planet.speed,
+            acceleration=self.logic.planet.actual_acceleration,
+            direction=self.logic.direction,
+        )
 
         if self.logic.is_game_over:
             return SceneRequest(

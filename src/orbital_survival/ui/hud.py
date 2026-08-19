@@ -5,6 +5,7 @@ from dataclasses import dataclass
 import pygame
 
 from orbital_survival.config import (
+    DISPLAY_SCALE,
     FONT_NAMES,
     GREEN,
     MAX_LIVES,
@@ -13,9 +14,6 @@ from orbital_survival.config import (
     WHITE,
 )
 
-# Angular values are tiny fractions of a radian; scaling them makes the
-# readout move visibly instead of sitting at 0.0000.
-DISPLAY_SCALE = 1000
 MARGIN = 10
 LINE_GAP = 5
 

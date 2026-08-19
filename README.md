@@ -18,6 +18,7 @@ gone the run ends, so your score is a record of how long you lasted.
 - Planet movement with acceleration + friction
 - Randomized star rotation and beam firing
 - Real-time HUD (speed, acceleration, score, remaining lives, elapsed time)
+- Optional telemetry graph, plotting speed, acceleration and input over time
 - Keyboard and mouse support
 
 ## Requirements
@@ -34,7 +35,8 @@ uv sync
 ## Run
 
 ```bash
-uv run orbital-survival
+uv run orbital-survival           # play
+uv run orbital-survival --graph   # play, with the telemetry graph
 ```
 
 ## Development
@@ -65,6 +67,32 @@ arriving on the same frame cost two lives.
 The HUD shows the lives you have left as red hearts. Raise `MAX_LIVES` above
 five and the row collapses to a `♥ x N` count instead.
 
+## Telemetry Graph
+
+`--graph` opens a second window plotting the last five seconds of the round:
+speed, acceleration and the direction that reached the physics, stacked on a
+shared time axis.
+
+The vertical scales are fixed rather than fitted to the data, so the baseline
+never moves and a glance tells you how close to terminal velocity you are.
+Every bound is derived from the tuning constants, so editing `ACCELERATION`
+or `FRICTION` rescales the axes automatically.
+
+`INPUT` plots the direction the planet actually received, not the keys held.
+The two differ when both arrows are down, which resolves to left.
+
+Three constants in `config.py` control it:
+
+| Constant | Meaning |
+| --- | --- |
+| `GRAPH_HISTORY_FRAMES` | Frames kept and plotted. The history is stretched across a fixed-width window, so raising it buys more time rather than a wider window. |
+| `GRAPH_DRAW_INTERVAL` | Frames between repaints. Sampling always happens every frame, so this trades only smoothness for cost. |
+| `GRAPH_WIDTH` / `GRAPH_HEIGHT` | Size of the graph window. |
+
+Closing the graph window leaves the game running; it stays closed until the
+next launch. The graph holds its last picture between rounds, so the run that
+just ended is still readable on the game-over screen.
+
 ## Project Structure
 
 ```text
@@ -91,9 +119,9 @@ five and the row collapses to a `♥ x N` count instead.
 │     │  ├── play.py
 │     │  └── start.py
 │     └── ui
+│        ├── graph.py            # telemetry recorder and its window
 │        ├── hud.py
-│        ├── play_button.py
-│        └── start_button.py
+│        └── play_button.py
 ├── pyproject.toml
 ├── README.md
 └── uv.lock

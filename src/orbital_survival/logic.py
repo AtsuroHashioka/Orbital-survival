@@ -37,6 +37,11 @@ class Logic:
         self.left_active = False
         self.right_active = False
 
+        # The direction that last reached the planet, kept so the telemetry
+        # graph can plot what the physics actually saw rather than the raw
+        # button states, which disagree whenever both are held.
+        self.direction = 0
+
         self.corpses: list[BeamCorpse] = []
         self.score = 0
         self.lives = MAX_LIVES
@@ -51,13 +56,13 @@ class Logic:
 
         Holding both directions resolves to left; neither means coasting.
         """
-        direction = 0
+        self.direction = 0
         if self.left_active:
-            direction = 1
+            self.direction = 1
         elif self.right_active:
-            direction = -1
+            self.direction = -1
 
-        self.planet.update(direction)
+        self.planet.update(self.direction)
         self.star.update()
         self._update_corpses()
 

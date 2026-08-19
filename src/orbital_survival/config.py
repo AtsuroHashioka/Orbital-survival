@@ -31,6 +31,23 @@ BUTTON_RADIUS: Final[int] = 30
 # Monospaced font candidates, tried in order. A constant digit width keeps
 # the HUD from jittering as values change.
 FONT_NAMES: Final[list[str]] = ["consolas", "dejavusansmono", "couriernew", "monospace"]
+# Angular values are tiny fractions of a radian; scaling them makes a readout
+# move visibly instead of sitting at 0.0000. Shared so that the HUD and the
+# telemetry graph never disagree about what a speed of "99" means.
+DISPLAY_SCALE: Final[int] = 1000
+
+# --- Telemetry-graph parameters ---
+
+# The graph lives in its own window, opened only with `--graph`.
+GRAPH_WIDTH: Final[int] = 640
+GRAPH_HEIGHT: Final[int] = 420
+# Frames of history kept and plotted. The samples are stretched across the
+# plot area whatever this is, so raising it costs no screen space.
+GRAPH_HISTORY_FRAMES: Final[int] = FPS * 5
+# Frames between repaints. Recording still happens every frame, so this only
+# trades graph smoothness for the cost of rebuilding the plot; 1 repaints as
+# often as the game itself.
+GRAPH_DRAW_INTERVAL: Final[int] = 4
 
 # --- Game-system-related parameters ---
 
