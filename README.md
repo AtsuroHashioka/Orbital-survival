@@ -40,18 +40,10 @@ uv run orbital-survival
 ## Development
 
 ```bash
-uv run pytest              # tests
 uv run mypy                # type check (strict)
 uv run ruff check --fix    # lint
 uv run ruff format         # format
 ```
-
-`tests/data/golden_trace.json` records one whole run from fixed random seeds:
-every frame from the first to the one that spends the last life, capped at
-`MAX_FRAMES`. `test_golden.py` replays it and asserts the numbers still
-match, which is what lets the game be refactored without changing how it
-plays. Regenerate it with `uv run python -m tests._trace` — but only when a
-change to the rules is intended, since that is exactly what it guards.
 
 ## Controls
 
@@ -102,15 +94,6 @@ five and the row collapses to a `♥ x N` count instead.
 │        ├── hud.py
 │        ├── play_button.py
 │        └── start_button.py
-├── tests
-│  ├── _trace.py               # golden-master trace builder
-│  ├── conftest.py
-│  ├── data
-│  │  └── golden_trace.json
-│  ├── test_entities.py
-│  ├── test_golden.py
-│  ├── test_logic.py
-│  └── test_smoke.py
 ├── pyproject.toml
 ├── README.md
 └── uv.lock

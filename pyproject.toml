@@ -21,17 +21,13 @@ packages = ["src/orbital_survival"]
 [dependency-groups]
 dev = [
     "mypy>=2.3.0",
-    "pytest>=9.1.1",
     "ruff>=0.16.3",
 ]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
 
 [tool.mypy]
 python_version = "3.12"
 strict = true
-files = ["src", "tests"]
+files = ["src"]
 
 [tool.ruff]
 line-length = 88
