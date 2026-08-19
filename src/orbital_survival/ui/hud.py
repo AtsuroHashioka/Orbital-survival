@@ -1,16 +1,37 @@
-"""The on-screen readout of speed, acceleration, score, kills and time."""
+"""The on-screen readout of speed, acceleration, score, lives and time."""
 
 from dataclasses import dataclass
 
 import pygame
 
-from orbital_survival.config import FONT_NAMES, GREEN, SCREEN_WIDTH, WHITE
+from orbital_survival.config import (
+    FONT_NAMES,
+    GREEN,
+    MAX_LIVES,
+    RED,
+    SCREEN_WIDTH,
+    WHITE,
+)
 
 # Angular values are tiny fractions of a radian; scaling them makes the
 # readout move visibly instead of sitting at 0.0000.
 DISPLAY_SCALE = 1000
 MARGIN = 10
 LINE_GAP = 5
+
+HEART = "♥"
+# Past this many lives a row of hearts stops being readable at a glance, so
+# the row collapses to a count instead. The choice keys off MAX_LIVES rather
+# than the current life total, so the format never changes mid-round.
+MAX_HEARTS_SHOWN = 5
+
+
+def lives_text(lives: int) -> str:
+    """Render the remaining lives as hearts, or as a count if there are many."""
+    remaining = max(0, lives)
+    if MAX_LIVES <= MAX_HEARTS_SHOWN:
+        return " ".join([HEART] * remaining)
+    return f"{HEART} x {remaining}"
 
 
 @dataclass(frozen=True, slots=True)
@@ -19,7 +40,7 @@ class HUDState:
 
     planet_speed: float
     planet_acceleration: float
-    kill_count: int
+    lives: int
     score: int
     elapsed_ms: int
 
@@ -34,7 +55,7 @@ class HUD:
         self.color = WHITE
 
     def draw(self, screen: pygame.Surface, state: HUDState) -> None:
-        """Draw the HUD, stacking time/score/kills left and speed/accel right."""
+        """Draw the HUD, stacking time/score/lives left and speed/accel right."""
         display_speed = state.planet_speed * DISPLAY_SCALE
         speed_text = self.font.render(f"SPEED:{display_speed:+08.4f}", True, GREEN)
         speed_rect = speed_text.get_rect(topright=(SCREEN_WIDTH - MARGIN, MARGIN))
@@ -57,6 +78,8 @@ class HUD:
         score_rect = score_text.get_rect(topleft=(MARGIN, time_rect.bottom + LINE_GAP))
         screen.blit(score_text, score_rect)
 
-        kill_text = self.font.render(f"KILLED: {state.kill_count}", True, GREEN)
-        kill_rect = kill_text.get_rect(topleft=(MARGIN, score_rect.bottom + LINE_GAP))
-        screen.blit(kill_text, kill_rect)
+        # The hearts carry no label: unlike the numbers above them they need
+        # no naming, and red already sets them apart from the green readout.
+        heart_text = self.font.render(lives_text(state.lives), True, RED)
+        heart_rect = heart_text.get_rect(topleft=(MARGIN, score_rect.bottom + LINE_GAP))
+        screen.blit(heart_text, heart_rect)

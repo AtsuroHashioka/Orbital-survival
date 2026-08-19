@@ -10,7 +10,12 @@ import random
 
 import pytest
 
-from orbital_survival.config import CENTER_POS, PLANET_INITIAL_ANGLE, STAR_SIZE
+from orbital_survival.config import (
+    CENTER_POS,
+    MAX_LIVES,
+    PLANET_INITIAL_ANGLE,
+    STAR_SIZE,
+)
 from orbital_survival.entities.beam import Beam
 from orbital_survival.logic import Logic
 
@@ -33,7 +38,6 @@ def logic() -> Logic:
     instance.star.beams = []
     instance.corpses = []
     instance.score = 0
-    instance.kill_count = 0
     return instance
 
 
@@ -41,13 +45,13 @@ def make_beam(angle: float, radius: float) -> Beam:
     return Beam(CENTER_POS, angle, BEAM_ARC_RANGE, radius, BEAM_WIDTH)
 
 
-def test_beam_crossing_the_planet_scores_a_hit(logic: Logic) -> None:
+def test_beam_crossing_the_planet_costs_a_life(logic: Logic) -> None:
     logic.star.beams = [make_beam(ALIGNED_ANGLE, logic.planet.orbit_radius)]
 
     logic._check_collisions()
 
-    assert logic.kill_count == 1
-    assert logic.score == -200
+    assert logic.lives == MAX_LIVES - 1
+    assert logic.score == 0, "a hit costs a life, not points"
 
 
 def test_hit_beam_is_removed_and_leaves_a_corpse(logic: Logic) -> None:
@@ -66,7 +70,7 @@ def test_beam_at_the_planet_radius_but_elsewhere_misses(logic: Logic) -> None:
 
     logic._check_collisions()
 
-    assert logic.kill_count == 0
+    assert logic.lives == MAX_LIVES
     assert logic.score == 0
     assert logic.star.beams == [beam]
 
@@ -78,7 +82,7 @@ def test_beam_past_the_orbit_scores_a_dodge(logic: Logic) -> None:
     logic._check_collisions()
 
     assert logic.score == 10
-    assert logic.kill_count == 0
+    assert logic.lives == MAX_LIVES
     assert beam.dodged is True
 
 
@@ -98,7 +102,7 @@ def test_beam_short_of_the_orbit_scores_nothing(logic: Logic) -> None:
     logic._check_collisions()
 
     assert logic.score == 0
-    assert logic.kill_count == 0
+    assert logic.lives == MAX_LIVES
 
 
 def test_collision_survives_angle_wraparound(logic: Logic) -> None:
@@ -108,7 +112,31 @@ def test_collision_survives_angle_wraparound(logic: Logic) -> None:
 
     logic._check_collisions()
 
-    assert logic.kill_count == 1
+    assert logic.lives == MAX_LIVES - 1
+
+
+def test_two_beams_in_one_frame_cost_two_lives(logic: Logic) -> None:
+    """Collisions are resolved per beam, with no window of invincibility."""
+    logic.star.beams = [
+        make_beam(ALIGNED_ANGLE, logic.planet.orbit_radius),
+        make_beam(ALIGNED_ANGLE, logic.planet.orbit_radius),
+    ]
+
+    logic._check_collisions()
+
+    assert logic.lives == MAX_LIVES - 2
+
+
+def test_the_game_is_over_once_every_life_is_spent(logic: Logic) -> None:
+    for remaining in range(MAX_LIVES - 1, -1, -1):
+        assert logic.is_game_over is False
+        logic.star.beams = [make_beam(ALIGNED_ANGLE, logic.planet.orbit_radius)]
+
+        logic._check_collisions()
+
+        assert logic.lives == remaining
+
+    assert logic.is_game_over is True
 
 
 def test_corpses_expire(logic: Logic) -> None:

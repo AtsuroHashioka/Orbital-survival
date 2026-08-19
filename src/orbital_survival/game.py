@@ -14,7 +14,8 @@ from orbital_survival.config import (
     Color,
     Position,
 )
-from orbital_survival.scenes.base import GameMode, Scene
+from orbital_survival.scenes.base import GameMode, Scene, SceneRequest
+from orbital_survival.scenes.game_over import GameOverScene
 from orbital_survival.scenes.play import PlayScene
 from orbital_survival.scenes.start import StartScene
 
@@ -44,21 +45,27 @@ class Game:
         pygame.display.set_caption("ORBITAL SURVIVAL")
 
         self.is_running = True
-        self.scene = self._create_scene(GameMode.START)
+        self.scene = self._create_scene(SceneRequest(GameMode.START))
 
         self.background_stars = self._create_stars(NUM_BACKGROUND_STARS)
 
-    def _create_scene(self, mode: GameMode) -> Scene:
-        """Build the scene for the given mode.
+    def _create_scene(self, request: SceneRequest) -> Scene:
+        """Build the scene the request names, handing over its payload.
 
         Owning construction here is what lets scenes stay unaware of each
         other: they only name the mode they want to switch to.
         """
-        match mode:
+        match request.mode:
             case GameMode.START:
                 return StartScene(self.screen)
             case GameMode.PLAY:
                 return PlayScene(self.screen)
+            case GameMode.GAME_OVER:
+                # Asking for the game-over screen without a tally to show
+                # is a caller bug, so let it fail loudly rather than
+                # inventing a score of zero.
+                assert request.result is not None
+                return GameOverScene(self.screen, request.result)
 
     def _create_stars(self, num_stars: int) -> list[BackgroundStar]:
         """Scatter the starfield once at startup; it never moves afterwards."""
@@ -85,13 +92,15 @@ class Game:
             if event.type == pygame.QUIT:
                 self.is_running = False
 
-            next_mode = self.scene.handle_event(event)
-            if next_mode is not None:
-                self.scene = self._create_scene(next_mode)
+            request = self.scene.handle_event(event)
+            if request is not None:
+                self.scene = self._create_scene(request)
 
     def _update(self) -> None:
-        """Advance the current scene one frame."""
-        self.scene.update()
+        """Advance the current scene one frame, honouring any switch."""
+        request = self.scene.update()
+        if request is not None:
+            self.scene = self._create_scene(request)
 
     def _draw(self) -> None:
         """Repaint the frame: background, starfield, then the scene."""

@@ -41,6 +41,9 @@ CIRCLE_WIDTH: Final[int] = 2  # Circle line width for celestial bodies
 ACCELERATION: Final[float] = 0.0010  # Angular acceleration
 FRICTION: Final[float] = 0.99  # Deceleration ratio
 
+# Beam hits the player can absorb before the game ends.
+MAX_LIVES: Final[int] = 3
+
 # Beam-related parameters
 BEAM_SPEED: Final[int] = 2  # Beam expansion speed
 BEAM_MAX_RADIUS: Final[int] = SCREEN_SIZE  # Maximum beam radius (alive check)
