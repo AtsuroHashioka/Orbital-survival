@@ -18,15 +18,19 @@ import random
 from pathlib import Path
 from typing import Any
 
+from orbital_survival.config import MAX_LIVES
 from orbital_survival.logic import Logic
 
 TRACE_PATH = Path(__file__).parent / "data" / "golden_trace.json"
 
-# These seeds were picked over a small search because they exercise both
-# collision outcomes well within 600 frames (6 hits and 19 dodges), rather
-# than leaving the "beam hit the planet" branch nearly untouched.
-FRAMES = 600
-GAME_SEED = 4
+# MAX_FRAMES is a ceiling, not a length: the trace stops at game over, so
+# that what it pins down is a whole game rather than an arbitrary slice of
+# one. These seeds were picked over a small search for a long run that
+# still exercises both collision outcomes — 1000 frames, 3 hits and 45
+# dodges — while leaving headroom under the ceiling, so that a future
+# tuning change lengthening the run does not silently truncate the trace.
+MAX_FRAMES = 1200
+GAME_SEED = 249
 INPUT_SEED = 1
 
 FIELDS = (
@@ -42,7 +46,7 @@ FIELDS = (
     "beam_dodged",
     "corpse_lives",
     "score",
-    "kill_count",
+    "lives",
 )
 
 
@@ -53,13 +57,16 @@ def _inputs(rng: random.Random) -> tuple[bool, bool]:
 
 
 def build_trace() -> dict[str, Any]:
-    """Run the logic layer for FRAMES frames and record its state each frame."""
+    """Record the logic layer frame by frame until the run ends.
+
+    Stops at game over, or at MAX_FRAMES if the run somehow outlives it.
+    """
     random.seed(GAME_SEED)
     logic = Logic()
     input_rng = random.Random(INPUT_SEED)
 
     states = []
-    for _ in range(FRAMES):
+    for _ in range(MAX_FRAMES):
         logic.left_active, logic.right_active = _inputs(input_rng)
         logic.update()
         states.append(
@@ -76,12 +83,15 @@ def build_trace() -> dict[str, Any]:
                 [beam.dodged for beam in logic.star.beams],
                 [corpse.life for corpse in logic.corpses],
                 logic.score,
-                logic.kill_count,
+                logic.lives,
             ]
         )
 
+        if logic.is_game_over:
+            break
+
     return {
-        "frames": FRAMES,
+        "max_frames": MAX_FRAMES,
         "game_seed": GAME_SEED,
         "input_seed": INPUT_SEED,
         "fields": list(FIELDS),
@@ -120,7 +130,7 @@ if __name__ == "__main__":
     built = build_trace()
     save_trace(built)
     rows = as_rows(built)
-    kills = rows[-1]["kill_count"]
-    dodges = (rows[-1]["score"] + 200 * kills) // 10
-    print(f"wrote {TRACE_PATH} ({FRAMES} frames)")
-    print(f"final score={rows[-1]['score']} kills={kills} dodges={dodges}")
+    hits = MAX_LIVES - rows[-1]["lives"]
+    dodges = rows[-1]["score"] // 10
+    print(f"wrote {TRACE_PATH} ({len(rows)} frames)")
+    print(f"final score={rows[-1]['score']} hits={hits} dodges={dodges}")

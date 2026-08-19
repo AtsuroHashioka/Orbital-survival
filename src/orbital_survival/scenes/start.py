@@ -9,7 +9,7 @@ from orbital_survival.config import (
     SCREEN_WIDTH,
     WHITE,
 )
-from orbital_survival.scenes.base import GameMode, Scene
+from orbital_survival.scenes.base import GameMode, Scene, SceneRequest
 
 TITLE_FONT_SIZE = 74
 PROMPT_FONT_SIZE = 36
@@ -33,12 +33,13 @@ class StartScene(Scene):
         self.title_font = pygame.font.SysFont(FONT_NAMES, TITLE_FONT_SIZE)
         self.prompt_font = pygame.font.SysFont(FONT_NAMES, PROMPT_FONT_SIZE)
 
-    def handle_event(self, event: pygame.event.Event) -> GameMode | None:
+    def handle_event(self, event: pygame.event.Event) -> SceneRequest | None:
         """Switch to PLAY when SPACE is pressed."""
-        return GameMode.PLAY if is_start_pressed(event) else None
+        return SceneRequest(GameMode.PLAY) if is_start_pressed(event) else None
 
-    def update(self) -> None:
+    def update(self) -> SceneRequest | None:
         """The title screen is static; nothing to advance."""
+        return None
 
     def draw(self) -> None:
         """Draw the title, with the prompt centered beneath it."""

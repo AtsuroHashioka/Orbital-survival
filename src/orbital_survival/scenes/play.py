@@ -4,7 +4,7 @@ import pygame
 
 from orbital_survival.config import BUTTON_RADIUS, SCREEN_HEIGHT, SCREEN_WIDTH
 from orbital_survival.logic import Logic
-from orbital_survival.scenes.base import GameMode, Scene
+from orbital_survival.scenes.base import GameMode, GameResult, Scene, SceneRequest
 from orbital_survival.ui.hud import HUD, HUDState
 from orbital_survival.ui.play_button import PlayButton
 
@@ -43,15 +43,19 @@ class PlayScene(Scene):
         )
         self.hud = HUD()
 
-    def handle_event(self, event: pygame.event.Event) -> GameMode | None:
-        """Play mode never switches away on its own."""
+    def handle_event(self, event: pygame.event.Event) -> SceneRequest | None:
+        """Play mode never switches away in response to an event."""
         return None
 
-    def update(self) -> None:
+    def update(self) -> SceneRequest | None:
         """Poll keyboard and mouse, then step the logic one frame.
 
         Input is polled rather than event-driven so that holding a key or a
         button keeps accelerating, instead of nudging once per key repeat.
+
+        Returns a switch to the game-over screen on the frame the last life
+        is spent, carrying the tally with it — this scene is discarded
+        immediately afterwards, so nothing else can report those numbers.
         """
         keys = pygame.key.get_pressed()
         mouse_buttons = pygame.mouse.get_pressed()
@@ -65,6 +69,16 @@ class PlayScene(Scene):
         )
 
         self.logic.update()
+
+        if self.logic.is_game_over:
+            return SceneRequest(
+                GameMode.GAME_OVER,
+                GameResult(
+                    score=self.logic.score,
+                    elapsed_ms=pygame.time.get_ticks() - self.start_time,
+                ),
+            )
+        return None
 
     def draw(self) -> None:
         """Draw corpses, star, planet, controls and HUD, back to front."""
@@ -82,7 +96,7 @@ class PlayScene(Scene):
             HUDState(
                 planet_speed=self.logic.planet.speed,
                 planet_acceleration=self.logic.planet.actual_acceleration,
-                kill_count=self.logic.kill_count,
+                lives=self.logic.lives,
                 score=self.logic.score,
                 elapsed_ms=pygame.time.get_ticks() - self.start_time,
             ),

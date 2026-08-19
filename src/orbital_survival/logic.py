@@ -9,6 +9,7 @@ from typing import Final
 
 from orbital_survival.config import (
     CENTER_POS,
+    MAX_LIVES,
     PLANET_INITIAL_ANGLE,
     PLANET_ORBIT_RADIUS,
     PLANET_SIZE,
@@ -19,7 +20,6 @@ from orbital_survival.entities.planet import Planet
 from orbital_survival.entities.star import Star
 
 DODGE_SCORE: Final[int] = 10
-HIT_PENALTY: Final[int] = 200
 
 
 class Logic:
@@ -39,7 +39,12 @@ class Logic:
 
         self.corpses: list[BeamCorpse] = []
         self.score = 0
-        self.kill_count = 0
+        self.lives = MAX_LIVES
+
+    @property
+    def is_game_over(self) -> bool:
+        """True once every life has been spent."""
+        return self.lives <= 0
 
     def update(self) -> None:
         """Step everything one frame, then resolve collisions.
@@ -101,8 +106,7 @@ class Logic:
                 ) - math.pi
 
                 if abs(angle_diff) < beam.arc_range / 2 + angle_margin:
-                    self.kill_count += 1
-                    self.score -= HIT_PENALTY
+                    self.lives -= 1
                     self.corpses.append(
                         BeamCorpse(
                             beam.center_pos,
