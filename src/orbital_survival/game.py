@@ -49,6 +49,8 @@ class Game:
         # in and out of existence each time the player dies. None once the
         # player closes it, or when --graph was never passed.
         self.graph = GraphWindow() if show_graph else None
+        if self.graph is not None:
+            self.graph.place_beside_game()
 
         self.is_running = True
         self.scene = self._create_scene(SceneRequest(GameMode.START))

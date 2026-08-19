@@ -38,9 +38,11 @@ DISPLAY_SCALE: Final[int] = 1000
 
 # --- Telemetry-graph parameters ---
 
-# The graph lives in its own window, opened only with `--graph`.
-GRAPH_WIDTH: Final[int] = 640
-GRAPH_HEIGHT: Final[int] = 420
+# The graph lives in its own window, opened only with `--graph`. Matching the
+# game window rather than fixing a size keeps the two side by side at the same
+# scale, and makes the plot track a change to SCREEN_SIZE.
+GRAPH_WIDTH: Final[int] = SCREEN_WIDTH
+GRAPH_HEIGHT: Final[int] = SCREEN_HEIGHT
 # Frames of history kept and plotted. The samples are stretched across the
 # plot area whatever this is, so raising it costs no screen space.
 GRAPH_HISTORY_FRAMES: Final[int] = FPS * 5

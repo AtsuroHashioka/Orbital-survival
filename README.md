@@ -73,6 +73,11 @@ five and the row collapses to a `♥ x N` count instead.
 speed, acceleration and the direction that reached the physics, stacked on a
 shared time axis.
 
+The graph window is the same size as the game window, and the two are placed
+side by side on launch when the desktop is wide enough for both; otherwise the
+window manager places them and you can drag them apart. Either way the keyboard
+stays on the game, so you can start playing without clicking anything first.
+
 The vertical scales are fixed rather than fitted to the data, so the baseline
 never moves and a glance tells you how close to terminal velocity you are.
 Every bound is derived from the tuning constants, so editing `ACCELERATION`
@@ -87,7 +92,7 @@ Three constants in `config.py` control it:
 | --- | --- |
 | `GRAPH_HISTORY_FRAMES` | Frames kept and plotted. The history is stretched across a fixed-width window, so raising it buys more time rather than a wider window. |
 | `GRAPH_DRAW_INTERVAL` | Frames between repaints. Sampling always happens every frame, so this trades only smoothness for cost. |
-| `GRAPH_WIDTH` / `GRAPH_HEIGHT` | Size of the graph window. |
+| `GRAPH_WIDTH` / `GRAPH_HEIGHT` | Size of the graph window, tracking `SCREEN_WIDTH` / `SCREEN_HEIGHT` so it stays the size of the game window. |
 
 Closing the graph window leaves the game running; it stays closed until the
 next launch. The graph holds its last picture between rounds, so the run that

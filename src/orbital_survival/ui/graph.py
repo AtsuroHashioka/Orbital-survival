@@ -30,6 +30,8 @@ from orbital_survival.config import (
     GRAPH_WIDTH,
     GRAY,
     GREEN,
+    SCREEN_HEIGHT,
+    SCREEN_WIDTH,
     SUN_ORANGE,
     Color,
 )
@@ -37,10 +39,7 @@ from orbital_survival.entities.base import CelestialBody
 
 MARGIN = 10
 LABEL_FONT_SIZE = 18
-# Each pane gives up this much of its top to its label. Drawing the label
-# inside the plot instead would put it exactly where the traces spend their
-# time: a series at its positive bound sits on the pane's top edge.
-LABEL_HEIGHT = LABEL_FONT_SIZE + 2
+LABEL_INSET = 4  # Offset of the label from its pane's top-left corner
 
 # One frame changes the speed by `a * direction * friction - speed * (1 -
 # friction)`. Both terms peak at ACCELERATION * FRICTION -- the second because
@@ -142,6 +141,33 @@ class GraphWindow:
         # instead of leaving the window blank until the interval elapses.
         self.frames_since_draw = GRAPH_DRAW_INTERVAL
 
+    def place_beside_game(self) -> None:
+        """Sit beside the game window, and hand the keyboard back to it.
+
+        This window is created after the game's, so left alone it opens on top
+        of it holding the focus, and the arrow keys do nothing until the player
+        thinks to click the game window first.
+        """
+        game_window = Window.from_display_module()
+
+        # This window was created a moment ago and the window manager has not
+        # placed it yet. Setting a position before it does is silently undone
+        # -- measurably: without this pump the graph lands 60px below the game
+        # every single time -- so let SDL take delivery of that placement first.
+        pygame.event.pump()
+
+        desktop_width, desktop_height = pygame.display.get_desktop_sizes()[0]
+        # Only arranged when both windows fit side by side. On a narrower
+        # desktop a computed position would push one of them off-screen, so
+        # there the OS keeps its own placement and the player drags them.
+        if desktop_width >= SCREEN_WIDTH + GRAPH_WIDTH:
+            left = (desktop_width - SCREEN_WIDTH - GRAPH_WIDTH) // 2
+            top = max(0, (desktop_height - SCREEN_HEIGHT) // 2)
+            game_window.position = (left, top)
+            self.window.position = (left + SCREEN_WIDTH, top)
+
+        game_window.focus()
+
     def attach(self, recorder: GraphRecorder) -> None:
         """Plot this recorder from now on."""
         self.recorder = recorder
@@ -177,17 +203,14 @@ class GraphWindow:
             self._draw_pane(pane, list(values), self._pane_rect(index))
 
     def _pane_rect(self, index: int) -> pygame.Rect:
-        """Return the plot area of the index-th pane, counting from the top.
-
-        The rect excludes the label row, which sits immediately above it.
-        """
+        """Return the plot area of the index-th pane, counting from the top."""
         # One margin above each pane plus one below the last.
         height = (GRAPH_HEIGHT - MARGIN * (len(PANES) + 1)) // len(PANES)
         return pygame.Rect(
             MARGIN,
-            MARGIN + index * (height + MARGIN) + LABEL_HEIGHT,
+            MARGIN + index * (height + MARGIN),
             GRAPH_WIDTH - 2 * MARGIN,
-            height - LABEL_HEIGHT,
+            height,
         )
 
     def _draw_pane(self, pane: Pane, values: list[float], rect: pygame.Rect) -> None:
@@ -209,7 +232,7 @@ class GraphWindow:
         label = f"{pane.label}:{latest * pane.scale:{pane.value_format}}"
         self.surface.blit(
             self.font.render(label, True, pane.color),
-            (rect.left, rect.top - LABEL_HEIGHT),
+            (rect.left + LABEL_INSET, rect.top + LABEL_INSET),
         )
 
     def _x(self, index: int, count: int, rect: pygame.Rect) -> float:
